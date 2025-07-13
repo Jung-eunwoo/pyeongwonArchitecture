@@ -11,6 +11,10 @@ export default defineConfig({
     vue(),
     ...(process.env.NODE_ENV === "development" ? [vueDevTools()] : []),
   ],
+  build: {
+    target: 'esnext',
+    minify: 'terser'
+  },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
