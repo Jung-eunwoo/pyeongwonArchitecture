@@ -12,8 +12,7 @@ export default defineConfig({
     ...(process.env.NODE_ENV === "development" ? [vueDevTools()] : []),
   ],
   build: {
-    target: 'esnext',
-    minify: 'terser'
+    target: 'esnext'
   },
   resolve: {
     alias: {
