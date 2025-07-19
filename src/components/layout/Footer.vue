@@ -65,9 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { COMPANY_INFO } from "@/constants/company-info";
-
-const CONTACT_INFO = COMPANY_INFO.contact;
+import { CONTACT_INFO } from "@/constants/company-info";
 
 // Footer component script
 </script>
