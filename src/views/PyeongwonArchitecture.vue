@@ -41,7 +41,15 @@ import PortfolioSection from "../components/introducing/PortfolioSection.vue";
 import ContactUsSection from "../components/ContactUsSection.vue";
 import Header from "../components/layout/Header.vue";
 import Footer from "../components/layout/Footer.vue";
-import { COMPANY_INFO, CONTACT_INFO, COMPANY_STATS } from "../constants/company-info";
+import {
+  COMPANY_STATS,
+  NAV_ITEMS,
+  COMPANY_FEATURES,
+  SERVICES,
+  PORTFOLIO_PROJECTS,
+  CONTACT_LIST,
+  INITIAL_FORM_DATA,
+} from "../constants/company-info";
 
 // Simple icon placeholders
 const Phone = "phone";
@@ -56,108 +64,41 @@ const Building2 = "building2";
 
 const activeSection = ref("home");
 
-const navItems = [
-  { id: "home", label: "홈" },
-  { id: "about", label: "회사소개" },
-  { id: "services", label: "서비스" },
-  { id: "portfolio", label: "포트폴리오" },
-  { id: "contact", label: "견적문의" },
-];
+// 아이콘 매핑 객체
+const iconMap = {
+  Award,
+  Users,
+  Hammer,
+  Home,
+  Building2,
+  Calculator,
+  Phone,
+  Mail,
+  MapPin,
+};
 
-const features = [
-  {
-    icon: Award,
-    title: "품질 보증",
-    description:
-      "엄선된 자재와 숙련된 기술진으로 최고 품질의 시공을 보장합니다.",
-  },
-  {
-    icon: Users,
-    title: "전문 팀",
-    description:
-      "건축사, 인테리어 디자이너, 시공 전문가가 함께하는 원스톱 서비스",
-  },
-  {
-    icon: Hammer,
-    title: "A/S 보장",
-    description:
-      "완공 후에도 지속적인 관리와 신속한 A/S로 고객 만족을 실현합니다.",
-  },
-];
+// 상수에서 가져온 데이터에 실제 아이콘 컴포넌트 매핑
+const navItems = [...NAV_ITEMS];
 
-const services = [
-  {
-    icon: Home,
-    title: "주거 공간",
-    description: "아파트, 빌라, 단독주택 리모델링",
-    items: [
-      "전체 리모델링",
-      "부분 인테리어",
-      "주방, 욕실 전문 시공",
-      "확장 및 구조 변경",
-    ],
-  },
-  {
-    icon: Building2,
-    title: "상업 공간",
-    description: "사무실, 매장, 카페 인테리어",
-    items: [
-      "사무실 인테리어",
-      "매장 및 쇼룸",
-      "카페, 레스토랑",
-      "병원, 클리닉",
-    ],
-  },
-  {
-    icon: Calculator,
-    title: "설계 서비스",
-    description: "3D 설계 및 시뮬레이션",
-    items: ["3D 모델링", "도면 작성", "인허가 대행", "구조 안전 진단"],
-  },
-];
+const features = COMPANY_FEATURES.map((feature) => ({
+  ...feature,
+  icon: iconMap[feature.icon as keyof typeof iconMap],
+}));
 
-const portfolio = [
-  { title: "강남 아파트 리모델링", type: "주거공간", image: "" },
-  { title: "홍대 카페 인테리어", type: "상업공간", image: "" },
-  { title: "판교 사무실 설계", type: "사무공간", image: "" },
-  { title: "용산 단독주택", type: "주거공간", image: "" },
-  { title: "명동 매장 인테리어", type: "상업공간", image: "" },
-  { title: "분당 빌라 리모델링", type: "주거공간", image: "" },
-];
+const services = SERVICES.map((service) => ({
+  ...service,
+  icon: iconMap[service.icon as keyof typeof iconMap],
+  items: [...service.items],
+}));
 
-const contacts = [
-  {
-    icon: Phone,
-    title: "전화 문의",
-    content: COMPANY_INFO.phone,
-    subtitle: COMPANY_INFO.businessHours.weekday,
-  },
-  {
-    icon: Mail,
-    title: "이메일 문의",
-    content: COMPANY_INFO.email,
-    subtitle: "24시간 접수 가능",
-  },
-  {
-    icon: MapPin,
-    title: "오시는 길",
-    content: COMPANY_INFO.address.roadAddress,
-    subtitle: COMPANY_INFO.address.detailAddress,
-  },
-];
+const portfolio = [...PORTFOLIO_PROJECTS];
 
-const form = ref({
-  name: "",
-  phone: "",
-  email: "",
-  constructionDate: "",
-  area: "",
-  postalCode: "",
-  roadAddress: "",
-  detailAddress: "",
-  budget: "",
-  message: "",
-});
+const contacts = CONTACT_LIST.map((contact) => ({
+  ...contact,
+  icon: iconMap[contact.icon as keyof typeof iconMap],
+}));
+
+const form = ref({ ...INITIAL_FORM_DATA });
 
 const scrollToSection = (sectionId: string) => {
   const element = document.getElementById(sectionId);

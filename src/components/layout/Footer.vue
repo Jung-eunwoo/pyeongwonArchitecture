@@ -47,10 +47,9 @@
           <div>
             <h3 class="font-semibold mb-4">연락처</h3>
             <ul class="space-y-2 text-sm text-gray-400">
-              <li>Tel: 02-1234-5678</li>
-              <li>Email: info@pyeongwon.co.kr</li>
-              <li>서울시 강남구 테헤란로 123</li>
-              <li>평원빌딩 5층</li>
+              <li>Tel: {{ CONTACT_INFO.phone }}</li>
+              <li>Email: {{ CONTACT_INFO.email }}</li>
+              <li>{{ CONTACT_INFO.address }}</li>
             </ul>
           </div>
         </div>
@@ -66,6 +65,10 @@
 </template>
 
 <script setup lang="ts">
+import { COMPANY_INFO } from "@/constants/company-info";
+
+const CONTACT_INFO = COMPANY_INFO.contact;
+
 // Footer component script
 </script>
 
