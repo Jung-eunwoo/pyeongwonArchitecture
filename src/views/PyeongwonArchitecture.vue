@@ -11,7 +11,7 @@
     <HeroSection @scroll-to="scrollToSection" />
 
     <!-- About Section -->
-    <AboutSection :features="features" />
+    <AboutSection :features="features" :stats="COMPANY_STATS" />
 
     <!-- Services Section -->
     <ServicesSection :services="services" />
@@ -41,6 +41,7 @@ import PortfolioSection from "../components/introducing/PortfolioSection.vue";
 import ContactUsSection from "../components/ContactUsSection.vue";
 import Header from "../components/layout/Header.vue";
 import Footer from "../components/layout/Footer.vue";
+import { COMPANY_INFO, CONTACT_INFO, COMPANY_STATS } from "../constants/company-info";
 
 // Simple icon placeholders
 const Phone = "phone";
@@ -128,20 +129,20 @@ const contacts = [
   {
     icon: Phone,
     title: "전화 문의",
-    content: "02-1234-5678",
-    subtitle: "평일 09:00 ~ 18:00",
+    content: COMPANY_INFO.phone,
+    subtitle: COMPANY_INFO.businessHours.weekday,
   },
   {
     icon: Mail,
     title: "이메일 문의",
-    content: "info@pyeongwon.co.kr",
+    content: COMPANY_INFO.email,
     subtitle: "24시간 접수 가능",
   },
   {
     icon: MapPin,
     title: "오시는 길",
-    content: "서울시 강남구 테헤란로 123",
-    subtitle: "평원빌딩 5층",
+    content: COMPANY_INFO.address.roadAddress,
+    subtitle: COMPANY_INFO.address.detailAddress,
   },
 ];
 
