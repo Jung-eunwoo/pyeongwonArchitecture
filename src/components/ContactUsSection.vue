@@ -2,12 +2,12 @@
   <section id="contact" class="py-20 bg-gray-50">
     <div class="container mx-auto px-4">
       <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-16">
+        <div class="text-center mb-16 fade-in-up" ref="titleRef">
           <h2 class="text-4xl font-bold text-gray-900 mb-4">견적 문의</h2>
           <p class="text-lg text-gray-600">무료 상담 및 견적을 받아보세요</p>
         </div>
 
-        <div class="bg-white rounded-lg shadow-md p-8 mb-12">
+        <div class="bg-white rounded-lg shadow-md p-8 mb-12 fade-in-up-delay" ref="formRef">
           <form @submit.prevent="handleSubmit" class="space-y-6">
             <div class="grid md:grid-cols-2 gap-6">
               <div>
@@ -175,7 +175,7 @@
           </form>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-8 text-center">
+        <div class="grid md:grid-cols-3 gap-8 text-center stagger-animation" ref="contactsRef">
           <ContactInfo
             v-for="contact in contacts"
             :key="contact.title"
@@ -191,7 +191,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted, onUnmounted } from "vue";
 import ContactInfo from "./ContactInfo.vue";
 
 interface Props {
@@ -225,6 +225,37 @@ const emit = defineEmits<Emits>();
 
 const formData = ref({ ...props.form });
 
+// Refs for animation elements
+const titleRef = ref<HTMLElement>();
+const formRef = ref<HTMLElement>();
+const contactsRef = ref<HTMLElement>();
+
+let observer: IntersectionObserver;
+
+const setupIntersectionObserver = () => {
+  const options = {
+    threshold: 0.1,
+    rootMargin: "0px 0px -50px 0px",
+  };
+
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+      }
+    });
+  }, options);
+
+  // Observe all animation elements
+  const elementsToObserve = [titleRef.value, formRef.value, contactsRef.value];
+
+  elementsToObserve.forEach((element) => {
+    if (element) {
+      observer.observe(element);
+    }
+  });
+};
+
 // Watch for form changes and sync with parent
 watch(
   () => props.form,
@@ -241,6 +272,16 @@ const handleSubmit = () => {
 const handleAddressSearch = () => {
   emit("address-search");
 };
+
+onMounted(() => {
+  setupIntersectionObserver();
+});
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect();
+  }
+});
 </script>
 
 <style scoped>
