@@ -7,7 +7,10 @@
           <p class="text-lg text-gray-600">무료 상담 및 견적을 받아보세요</p>
         </div>
 
-        <div class="bg-white rounded-lg shadow-md p-8 mb-12 fade-in-up-delay" ref="formRef">
+        <div
+          class="bg-white rounded-lg shadow-md p-8 mb-12 fade-in-up-delay"
+          ref="formRef"
+        >
           <form @submit.prevent="handleSubmit" class="space-y-6">
             <div class="grid md:grid-cols-2 gap-6">
               <div>
@@ -74,6 +77,35 @@
               </div>
               <div>
                 <label
+                  for="construction-type"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                  >공사 구분 *</label
+                >
+                <select
+                  v-model="formData.constructionType"
+                  id="construction-type"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
+                >
+                  <option value="">공사 구분을 선택해주세요</option>
+                  <option value="신축">신축 (새로운 건물 건설)</option>
+                  <option value="증축">증축 (기존 건물 확장)</option>
+                  <option value="외관리모델링">
+                    외관 리모델링 (외부 개보수)
+                  </option>
+                  <option value="내부리모델링">내부 리모델링 (인테리어)</option>
+                  <option value="전체리모델링">
+                    전체 리모델링 (내외부 전면 개보수)
+                  </option>
+                  <option value="구조변경">구조 변경 및 보강</option>
+                  <option value="기타">기타 (상담 시 문의)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label
                   for="area"
                   class="block text-sm font-medium text-gray-700 mb-2"
                   >평형</label
@@ -89,6 +121,26 @@
                   <option value="30-40">30평 ~ 40평</option>
                   <option value="40-50">40평 ~ 50평</option>
                   <option value="50+">50평 이상</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  for="budget"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                  >예상 금액</label
+                >
+                <select
+                  v-model="formData.budget"
+                  id="budget"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
+                >
+                  <option value="">예상 금액대를 선택해주세요</option>
+                  <option value="1000-3000">1,000만원 ~ 3,000만원</option>
+                  <option value="3000-5000">3,000만원 ~ 5,000만원</option>
+                  <option value="5000-1억">5,000만원 ~ 1억원</option>
+                  <option value="1억-5억">1억원 ~ 5억원</option>
+                  <option value="5억-10억">5억원 ~ 10억원</option>
+                  <option value="10억+">10억원 이상</option>
                 </select>
               </div>
             </div>
@@ -145,7 +197,9 @@
                 <option value="1000-3000">1,000만원 ~ 3,000만원</option>
                 <option value="3000-5000">3,000만원 ~ 5,000만원</option>
                 <option value="5000-1억">5,000만원 ~ 1억원</option>
-                <option value="1억+">1억원 이상</option>
+                <option value="1억-5억">1억원 ~ 5억원</option>
+                <option value="5억-10억">5억원 ~ 10억원</option>
+                <option value="10억+">10억원 이상</option>
               </select>
             </div>
 
@@ -175,7 +229,10 @@
           </form>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-8 text-center stagger-animation" ref="contactsRef">
+        <div
+          class="grid md:grid-cols-3 gap-8 text-center stagger-animation"
+          ref="contactsRef"
+        >
           <ContactInfo
             v-for="contact in contacts"
             :key="contact.title"
@@ -206,6 +263,7 @@ interface Props {
     phone: string;
     email: string;
     constructionDate: string;
+    constructionType: string;
     area: string;
     postalCode: string;
     roadAddress: string;

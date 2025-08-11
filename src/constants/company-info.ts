@@ -220,6 +220,7 @@ export const INITIAL_FORM_DATA = {
   phone: "",
   email: "",
   constructionDate: "",
+  constructionType: "",
   area: "",
   postalCode: "",
   roadAddress: "",

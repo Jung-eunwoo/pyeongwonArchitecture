@@ -91,7 +91,10 @@ const services = SERVICES.map((service) => ({
   items: [...service.items],
 }));
 
-const portfolio = [...PORTFOLIO_PROJECTS];
+const portfolio = PORTFOLIO_PROJECTS.map((project) => ({
+  ...project,
+  images: [...project.images],
+}));
 
 const contacts = CONTACT_LIST.map((contact) => ({
   ...contact,
