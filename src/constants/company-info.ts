@@ -15,10 +15,10 @@ export const COMPANY_INFO = {
 
   // 주소 정보
   address: {
-    postalCode: "14547",
-    roadAddress: "경기 부천시 원미구 심곡동 133-2",
-    detailAddress: "1층 평원건축 사무실",
-    fullAddress: "경기 부천시 원미구 심곡동 133-2, 1층 평원건축 사무실",
+    postalCode: "14662",
+    roadAddress: "경기 부천시 원미구 부흥로 442",
+    detailAddress: "1층",
+    fullAddress: "경기 부천시 원미구 부흥로 442, 1층",
   },
 
   // 영업시간
