@@ -7,13 +7,16 @@
           <p class="text-lg text-gray-600">평원건축이 완성한 아름다운 공간들</p>
         </div>
 
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-animation" ref="portfolioRef">
+        <div
+          class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-animation"
+          ref="portfolioRef"
+        >
           <PortfolioItem
             v-for="(project, index) in portfolio"
             :key="index"
             :title="project.title"
             :type="project.type"
-            :image="project.image"
+            :images="project.images"
           />
         </div>
       </div>
@@ -29,7 +32,7 @@ interface Props {
   portfolio: Array<{
     title: string;
     type: string;
-    image: string;
+    images: string[];
   }>;
 }
 

@@ -100,42 +100,96 @@ export const COMPANY_FEATURES = [
 export const SERVICES = [
   {
     icon: "Home",
-    title: "주거 공간",
-    description: "아파트, 빌라, 단독주택 리모델링",
+    title: "신축",
+    description: "단독주택, 다세대 주택, 상업시설 신축 건설",
     items: [
-      "전체 리모델링",
-      "부분 인테리어",
-      "주방, 욕실 전문 시공",
-      "확장 및 구조 변경",
+      "단독주택 신축",
+      "다세대/다가구 주택 신축",
+      "근린생활시설 신축",
+      "소규모 상업시설 건설",
     ],
   },
   {
     icon: "Building2",
-    title: "상업 공간",
-    description: "사무실, 매장, 카페 인테리어",
+    title: "증축",
+    description: "기존 건물의 면적 확장 및 층수 증축",
     items: [
-      "사무실 인테리어",
-      "매장 및 쇼룸",
-      "카페, 레스토랑",
-      "병원, 클리닉",
+      "수직 증축 (층수 추가)",
+      "수평 증축 (면적 확장)",
+      "발코니 확장 및 샷시 설치",
+      "옥상 구조물 증축",
     ],
   },
   {
     icon: "Calculator",
-    title: "설계 서비스",
-    description: "3D 설계 및 시뮬레이션",
-    items: ["3D 모델링", "도면 작성", "인허가 대행", "구조 안전 진단"],
+    title: "리모델링",
+    description: "기존 건물의 구조 변경 및 전면 개보수, 인테리어 전문 시공",
+    items: [
+      "구조 변경 및 보강",
+      "내외부 전면 리모델링",
+      "주방, 욕실 인테리어",
+      "바닥재, 벽지, 도배 시공",
+    ],
   },
 ] as const;
 
 // 포트폴리오 프로젝트
 export const PORTFOLIO_PROJECTS = [
-  { title: "강남 아파트 리모델링", type: "주거공간", image: "" },
-  { title: "홍대 카페 인테리어", type: "상업공간", image: "" },
-  { title: "판교 사무실 설계", type: "사무공간", image: "" },
-  { title: "용산 단독주택", type: "주거공간", image: "" },
-  { title: "명동 매장 인테리어", type: "상업공간", image: "" },
-  { title: "분당 빌라 리모델링", type: "주거공간", image: "" },
+  {
+    title: "순창한옥전체뉴모델링",
+    type: "주거공간",
+    images: [
+      "/images/portfolio/sunchang-hanok-1.jpg",
+      "/images/portfolio/sunchang-hanok-2.jpg",
+      "/images/portfolio/sunchang-hanok-3.jpg",
+    ],
+  },
+  {
+    title: "부천옥길동신축공사",
+    type: "신축공사",
+    images: [
+      "/images/portfolio/bucheon-okgil-1.jpg",
+      "/images/portfolio/bucheon-okgil-2.jpg",
+      "/images/portfolio/bucheon-okgil-3.jpg",
+    ],
+  },
+  {
+    title: "부천범박동신축공사",
+    type: "신축공사",
+    images: [
+      "/images/portfolio/bucheon-beombak-1.jpg",
+      "/images/portfolio/bucheon-beombak-2.jpg",
+      "/images/portfolio/bucheon-beombak-3.jpg",
+    ],
+  },
+  {
+    title: "둔천동 천우교회 뉴모델링",
+    type: "리모델링",
+    images: [
+      "/images/portfolio/duncheon-church-1.jpg",
+      "/images/portfolio/duncheon-church-2.jpg",
+      "/images/portfolio/duncheon-church-3.jpg",
+    ],
+  },
+  {
+    title: "김포 상가주택 신축",
+    type: "신축",
+    images: [
+      "/images/portfolio/gimpo-commercial-1.jpg",
+      "/images/portfolio/gimpo-commercial-2.jpg",
+      "/images/portfolio/gimpo-commercial-3.jpg",
+      "/images/portfolio/gimpo-commercial-4.jpg",
+    ],
+  },
+  {
+    title: "화곡동 pc방 뉴모델링",
+    type: "리모델링",
+    images: [
+      "/images/portfolio/hwagok-pcroom-1.jpg",
+      "/images/portfolio/hwagok-pcroom-2.jpg",
+      "/images/portfolio/hwagok-pcroom-3.jpg",
+    ],
+  },
 ] as const;
 
 // 연락처 목록 (UI 표시용)
