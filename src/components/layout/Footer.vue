@@ -25,7 +25,7 @@
               <span class="text-2xl font-bold">평원건축</span>
             </div>
             <p class="text-gray-400 mb-4">
-              30년 경험의 전문성으로 고객의 꿈을 현실로 만드는 건축 및 인테리어
+              40년 경험의 전문성으로 고객의 꿈을 현실로 만드는 건축 및 인테리어
               전문 회사입니다.
             </p>
             <div class="text-sm text-gray-400">

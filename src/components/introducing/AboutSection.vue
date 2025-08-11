@@ -13,15 +13,17 @@
         <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
           <div class="fade-in-up" ref="contentRef">
             <h3 class="text-2xl font-bold text-gray-900 mb-6">
-              30년 경험의 전문성
+              40년 경험의 전문성
             </h3>
             <p class="text-gray-600 mb-6 leading-relaxed">
-              1994년 설립된 평원건축은 30년간 수많은 프로젝트를 성공적으로
-              완수하며 건축 및 인테리어 분야에서 확고한 신뢰를 쌓아왔습니다.
-              고객의 라이프스타일과 니즈를 정확히 파악하여 최적의 공간을
-              제안합니다.
+              평원건축은 40년간 수많은 프로젝트를 성공적으로 완수하며 건축 및
+              인테리어 분야에서 확고한 신뢰를 쌓아왔습니다. 고객의
+              라이프스타일과 니즈를 정확히 파악하여 최적의 공간을 제안합니다.
             </p>
-            <div class="grid grid-cols-2 gap-6 stagger-animation" ref="statsRef">
+            <div
+              class="grid grid-cols-2 gap-6 stagger-animation"
+              ref="statsRef"
+            >
               <div class="text-center">
                 <div
                   class="text-3xl font-bold mb-2"
@@ -42,7 +44,10 @@
               </div>
             </div>
           </div>
-          <div class="bg-gray-100 rounded-lg p-8 fade-in-up-delay" ref="imageRef">
+          <div
+            class="bg-gray-100 rounded-lg p-8 fade-in-up-delay"
+            ref="imageRef"
+          >
             <div
               class="w-full h-64 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center"
             >
@@ -70,7 +75,10 @@
           </div>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-8 stagger-animation" ref="featuresRef">
+        <div
+          class="grid md:grid-cols-3 gap-8 stagger-animation"
+          ref="featuresRef"
+        >
           <FeatureCard
             v-for="feature in features"
             :key="feature.title"
