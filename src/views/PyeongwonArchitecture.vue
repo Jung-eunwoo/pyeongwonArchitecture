@@ -135,7 +135,7 @@ const handleAddressSearch = () => {
 
 const submitForm = () => {
   console.log("Form submitted:", form.value);
-  alert("견적 문의가 접수되었습니다. 빠른 시일 내에 연락드리겠습니다.");
+  // alert는 ContactUsSection에서 처리하므로 여기서는 제거
 };
 
 onMounted(() => {

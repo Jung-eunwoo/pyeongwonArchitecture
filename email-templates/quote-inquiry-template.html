@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>새 견적문의</title>
+    <meta
+      name="x-preheader"
+      content="새 견적문의가 접수되었습니다. 상세 내용을 확인하세요."
+    />
+    <style>
+      @media only screen and (max-width: 600px) {
+        .mobile-padding {
+          padding: 12px !important;
+        }
+        .mobile-text {
+          font-size: 14px !important;
+        }
+        .mobile-title {
+          font-size: 18px !important;
+        }
+        .mobile-table td {
+          padding: 8px !important;
+          font-size: 14px !important;
+        }
+        .mobile-button {
+          display: block !important;
+          width: 100% !important;
+          margin: 16px 0 !important;
+          padding: 14px !important;
+          font-size: 16px !important;
+        }
+        .mobile-hide {
+          display: none !important;
+        }
+        .mobile-center {
+          text-align: center !important;
+        }
+      }
+    </style>
+  </head>
+  <body style="margin: 0; padding: 0; background: #f6f7f9">
+    <div
+      style="
+        max-width: 680px;
+        margin: 0 auto;
+        background: #ffffff;
+        border: 1px solid #eaeaea;
+        border-radius: 8px;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+          Arial, sans-serif;
+        color: #111827;
+      "
+    >
+      <!-- Header -->
+      <div
+        style="padding: 16px 20px; border-bottom: 1px solid #eaeaea"
+        class="mobile-padding"
+      >
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          "
+        >
+          <div>
+            <div
+              style="
+                font-size: 24px;
+                font-weight: bold;
+                color: #d52e38;
+                margin-bottom: 4px;
+              "
+              class="mobile-title"
+            >
+              평원건축
+            </div>
+            <div style="font-size: 12px; color: #6b7280">
+              PYEONGWON ARCHITECTURE
+            </div>
+          </div>
+          <div
+            style="
+              width: 40px;
+              height: 40px;
+              background: #d52e38;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: bold;
+            "
+            class="mobile-hide"
+          >
+            🏗️
+          </div>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div style="padding: 20px" class="mobile-padding">
+        <h1
+          style="margin: 0 0 6px; font-size: 20px; line-height: 1.4"
+          class="mobile-title"
+        >
+          🔔 새로운 견적 문의
+        </h1>
+        <p
+          style="margin: 0; font-size: 14px; color: #6b7280"
+          class="mobile-text"
+        >
+          접수일시: {{inquiry_date}}
+        </p>
+      </div>
+
+      <!-- Summary -->
+      <div style="padding: 0 20px 20px" class="mobile-padding">
+        <!-- 고객 정보 섹션 -->
+        <div
+          style="
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+          "
+        >
+          <h2
+            style="
+              margin: 0 0 12px;
+              font-size: 16px;
+              color: #d52e38;
+              font-weight: bold;
+            "
+          >
+            👤 고객 정보
+          </h2>
+          <div style="display: grid; gap: 8px">
+            <div
+              style="
+                display: flex;
+                padding: 8px 0;
+                border-bottom: 1px solid #e2e8f0;
+              "
+            >
+              <span
+                style="
+                  width: 80px;
+                  font-weight: 600;
+                  color: #4a5568;
+                  flex-shrink: 0;
+                "
+                >이름</span
+              >
+              <span style="color: #1a202c">{{customer_name}}</span>
+            </div>
+            <div
+              style="
+                display: flex;
+                padding: 8px 0;
+                border-bottom: 1px solid #e2e8f0;
+              "
+            >
+              <span
+                style="
+                  width: 80px;
+                  font-weight: 600;
+                  color: #4a5568;
+                  flex-shrink: 0;
+                "
+                >연락처</span
+              >
+              <a
+                href="tel:{{customer_phone}}"
+                style="color: #d52e38; text-decoration: none; font-weight: 500"
+                >{{customer_phone}}</a
+              >
+            </div>
+            <div style="display: flex; padding: 8px 0">
+              <span
+                style="
+                  width: 80px;
+                  font-weight: 600;
+                  color: #4a5568;
+                  flex-shrink: 0;
+                "
+                >이메일</span
+              >
+              <a
+                href="mailto:{{customer_email}}"
+                style="
+                  color: #d52e38;
+                  text-decoration: none;
+                  font-weight: 500;
+                  word-break: break-all;
+                "
+                >{{customer_email}}</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- 프로젝트 정보 섹션 -->
+        <div
+          style="
+            background: #fff5f5;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border-left: 4px solid #d52e38;
+          "
+        >
+          <h2
+            style="
+              margin: 0 0 12px;
+              font-size: 16px;
+              color: #d52e38;
+              font-weight: bold;
+            "
+          >
+            🏗️ 프로젝트 정보
+          </h2>
+          <div style="display: grid; gap: 8px">
+            <div
+              style="
+                display: flex;
+                padding: 8px 0;
+                border-bottom: 1px solid #fed7d7;
+              "
+            >
+              <span
+                style="
+                  width: 90px;
+                  font-weight: 600;
+                  color: #4a5568;
+                  flex-shrink: 0;
+                "
+                >공사구분</span
+              >
+              <span
+                style="
+                  background: #d52e38;
+                  color: white;
+                  padding: 2px 8px;
+                  border-radius: 12px;
+                  font-size: 12px;
+                  font-weight: 500;
+                "
+                >{{construction_type}}</span
+              >
+            </div>
+            <div
+              style="
+                display: flex;
+                padding: 8px 0;
+                border-bottom: 1px solid #fed7d7;
+              "
+            >
+              <span
+                style="
+                  width: 90px;
+                  font-weight: 600;
+                  color: #4a5568;
+                  flex-shrink: 0;
+                "
+                >예정일</span
+              >
+              <span style="color: #1a202c">{{construction_date}}</span>
+            </div>
+            <div
+              style="
+                display: flex;
+                padding: 8px 0;
+                border-bottom: 1px solid #fed7d7;
+              "
+            >
+              <span
+                style="
+                  width: 90px;
+                  font-weight: 600;
+                  color: #4a5568;
+                  flex-shrink: 0;
+                "
+                >평형</span
+              >
+              <span style="color: #1a202c">{{area}}</span>
+            </div>
+            <div style="display: flex; padding: 8px 0">
+              <span
+                style="
+                  width: 90px;
+                  font-weight: 600;
+                  color: #4a5568;
+                  flex-shrink: 0;
+                "
+                >예상금액</span
+              >
+              <span style="color: #d52e38; font-weight: 600">{{budget}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 주소 정보 섹션 -->
+        <div
+          style="
+            background: #f0f9ff;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+          "
+        >
+          <h2
+            style="
+              margin: 0 0 12px;
+              font-size: 16px;
+              color: #d52e38;
+              font-weight: bold;
+            "
+          >
+            📍 공사 예정지
+          </h2>
+          <div style="color: #1a202c; line-height: 1.5; margin-bottom: 8px">
+            {{full_address}}
+          </div>
+          <div style="font-size: 12px; color: #6b7280; line-height: 1.4">
+            <div>🏷️ 우편번호: {{postal_code}}</div>
+            <div>🛣️ 도로명: {{road_address}}</div>
+            <div>🏠 상세주소: {{detail_address}}</div>
+          </div>
+        </div>
+
+        <!-- 문의 내용 섹션 -->
+        <div
+          style="
+            background: #fffef0;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #f59e0b;
+          "
+        >
+          <h2
+            style="
+              margin: 0 0 12px;
+              font-size: 16px;
+              color: #d52e38;
+              font-weight: bold;
+            "
+          >
+            💬 문의 내용
+          </h2>
+          <div
+            style="
+              color: #1a202c;
+              line-height: 1.6;
+              white-space: pre-wrap;
+              background: white;
+              padding: 12px;
+              border-radius: 6px;
+              border: 1px solid #e5e7eb;
+            "
+          >
+            {{message}}
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div
+          style="
+            background: #fff5f5;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #fed7d7;
+          "
+        >
+          <h3 style="margin: 0 0 12px; color: #d52e38; font-size: 16px">
+            ⚡ 신속한 응답 필요
+          </h3>
+          <p style="margin: 0 0 16px; color: #6b7280; font-size: 14px">
+            고객님이 빠른 연락을 기다리고 있습니다
+          </p>
+
+          <!-- 모바일 친화적 버튼들 -->
+          <div
+            style="
+              display: flex;
+              gap: 8px;
+              justify-content: center;
+              flex-wrap: wrap;
+            "
+          >
+            <a
+              href="tel:{{customer_phone}}"
+              style="
+                display: inline-block;
+                padding: 12px 20px;
+                background: #d52e38;
+                color: #ffffff;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 14px;
+                min-width: 120px;
+              "
+              class="mobile-button"
+            >
+              📞 전화하기
+            </a>
+            <a
+              href="mailto:{{customer_email}}?subject=%5B회신%5D%20{{customer_name}}%20님%20견적문의%20관련"
+              style="
+                display: inline-block;
+                padding: 12px 20px;
+                background: #2563eb;
+                color: #ffffff;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 14px;
+                min-width: 120px;
+              "
+              class="mobile-button"
+            >
+              📧 이메일 회신
+            </a>
+          </div>
+        </div>
+
+        <p
+          style="
+            margin: 16px 0 0;
+            font-size: 12px;
+            color: #9ca3af;
+            text-align: center;
+          "
+          class="mobile-center"
+        >
+          본 메일은 웹사이트 견적문의 폼에서 자동 발송되었습니다.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div
+        style="
+          padding: 16px 20px;
+          border-top: 1px solid #eaeaea;
+          background: #fafafa;
+          font-size: 12px;
+          color: #6b7280;
+        "
+        class="mobile-padding"
+      >
+        <div style="text-align: center; line-height: 1.5">
+          <div style="font-weight: bold; color: #d52e38; margin-bottom: 8px">
+            평원건축 주식회사
+          </div>
+          <div style="margin-bottom: 4px">
+            📞 02-1234-5678 | 📱 010-1234-5678
+          </div>
+          <div style="margin-bottom: 4px">📧 pw83437@naver.com</div>
+          <div>📍 (14547) 경기 부천시 원미구 심곡동 133-2</div>
+        </div>
+        <hr
+          style="border: none; border-top: 1px solid #e2e8f0; margin: 12px 0"
+        />
+        <div style="text-align: center; font-size: 11px; color: #9ca3af">
+          이 메일에 바로 답장하시면 고객에게 회신되지 않습니다.<br
+            class="mobile-hide"
+          />
+          위의 회신 버튼을 사용해주세요.
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

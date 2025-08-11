@@ -42,6 +42,9 @@
                   required
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
                 />
+                <p class="text-sm text-gray-500">
+                  ※실제 연락을 받을 수 있는 번호를 입력해주세요.
+                </p>
               </div>
             </div>
 
@@ -59,6 +62,9 @@
                 required
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
               />
+              <p class="text-sm text-gray-500">
+                ※실제 연락을 받을 수 있는 이메일을 입력해주세요.
+              </p>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
@@ -202,9 +208,11 @@
             <div class="text-center">
               <button
                 type="submit"
-                class="bg-[#d52e38] text-white px-12 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity"
+                :disabled="isSubmitting"
+                class="bg-[#d52e38] text-white px-12 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                견적 문의하기
+                <span v-if="isSubmitting">전송 중...</span>
+                <span v-else>견적 문의하기</span>
               </button>
             </div>
           </form>
@@ -231,6 +239,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import ContactInfo from "./ContactInfo.vue";
+import emailjs from "@emailjs/browser";
 
 // 카카오 주소 검색 API 타입 정의
 declare global {
@@ -285,6 +294,7 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const formData = ref({ ...props.form });
+const isSubmitting = ref(false);
 
 // Refs for animation elements
 const titleRef = ref<HTMLElement>();
@@ -326,8 +336,139 @@ watch(
   { deep: true }
 );
 
-const handleSubmit = () => {
-  emit("submit-form");
+const handleSubmit = async () => {
+  // 필수 필드 검증
+  if (
+    !formData.value.name ||
+    !formData.value.phone ||
+    !formData.value.email ||
+    !formData.value.constructionType
+  ) {
+    alert("필수 항목을 모두 입력해주세요.");
+    return;
+  }
+
+  // EmailJS 설정 확인
+  const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+  const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+  const customerTemplateId = import.meta.env.VITE_EMAILJS_CUSTOMER_TEMPLATE_ID;
+  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+  // 개발 모드에서 설정 확인
+  if (
+    !serviceId ||
+    !templateId ||
+    !customerTemplateId ||
+    !publicKey ||
+    serviceId === "your_service_id" ||
+    templateId === "your_template_id" ||
+    customerTemplateId === "your_customer_template_id" ||
+    publicKey === "your_public_key"
+  ) {
+    alert(`EmailJS 설정이 필요합니다.
+
+다음 단계를 따라주세요:
+1. https://www.emailjs.com/ 에서 계정 생성
+2. 서비스(Gmail/Outlook) 연결
+3. 이메일 템플릿 2개 생성
+4. .env 파일에 실제 값 입력
+
+자세한 설정 방법은 EMAILJS_SETUP.md 파일을 참고하세요.`);
+    return;
+  }
+
+  isSubmitting.value = true;
+
+  try {
+    // 이메일 템플릿에 전달할 데이터 준비
+    const templateParams = {
+      customer_name: formData.value.name,
+      customer_phone: formData.value.phone,
+      customer_email: formData.value.email,
+      construction_date: formData.value.constructionDate || "미정",
+      construction_type: formData.value.constructionType,
+      area: formData.value.area || "미정",
+      budget: formData.value.budget || "미정",
+      postal_code: formData.value.postalCode || "",
+      road_address: formData.value.roadAddress || "",
+      detail_address: formData.value.detailAddress || "",
+      full_address:
+        `${formData.value.postalCode ? `(${formData.value.postalCode}) ` : ""}${
+          formData.value.roadAddress || ""
+        } ${formData.value.detailAddress || ""}`.trim() || "미입력",
+      message: formData.value.message || "특별한 요청사항 없음",
+      inquiry_date: new Date().toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    };
+
+    // 1. 회사로 견적 문의 이메일 전송
+    await emailjs.send(serviceId, templateId, templateParams);
+
+    // 2. 고객에게 접수 확인 이메일 전송
+    await emailjs.send(serviceId, customerTemplateId, templateParams);
+
+    alert(
+      "견적 문의가 성공적으로 전송되었습니다!\n빠른 시일 내에 연락드리겠습니다."
+    );
+
+    // 폼 초기화
+    formData.value = {
+      name: "",
+      phone: "",
+      email: "",
+      constructionDate: "",
+      constructionType: "",
+      area: "",
+      postalCode: "",
+      roadAddress: "",
+      detailAddress: "",
+      budget: "",
+      message: "",
+    };
+
+    emit("submit-form");
+  } catch (error: any) {
+    console.error("이메일 전송 실패:", error);
+
+    let errorMessage = "견적 문의 전송에 실패했습니다.";
+
+    if (error.status === 400) {
+      if (error.text?.includes("Public Key is invalid")) {
+        errorMessage = `EmailJS Public Key가 올바르지 않습니다.
+
+설정 방법:
+1. https://dashboard.emailjs.com/admin/account 접속
+2. Public Key 복사
+3. .env 파일의 VITE_EMAILJS_PUBLIC_KEY에 입력`;
+      } else if (error.text?.includes("Template ID")) {
+        errorMessage = `템플릿 ID가 올바르지 않습니다.
+
+확인 방법:
+1. https://dashboard.emailjs.com/admin/templates 접속
+2. 템플릿 ID 확인
+3. .env 파일의 템플릿 ID들 업데이트`;
+      } else if (error.text?.includes("Service ID")) {
+        errorMessage = `서비스 ID가 올바르지 않습니다.
+
+확인 방법:
+1. https://dashboard.emailjs.com/admin 접속
+2. 서비스 ID 확인
+3. .env 파일의 VITE_EMAILJS_SERVICE_ID 업데이트`;
+      }
+    }
+
+    alert(
+      errorMessage +
+        "\n\n자세한 설정 방법은 EMAILJS_SETUP.md 파일을 참고하세요."
+    );
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 
 const handleAddressSearch = () => {
@@ -362,6 +503,17 @@ const handleAddressSearch = () => {
 
 onMounted(() => {
   setupIntersectionObserver();
+
+  // EmailJS 초기화 (설정된 경우에만)
+  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+  if (publicKey && publicKey !== "your_public_key") {
+    emailjs.init(publicKey);
+    console.log("✅ EmailJS 초기화 완료");
+  } else {
+    console.warn(
+      "⚠️ EmailJS가 설정되지 않았습니다. EMAILJS_QUICK_SETUP.md를 참고하세요."
+    );
+  }
 });
 
 onUnmounted(() => {
