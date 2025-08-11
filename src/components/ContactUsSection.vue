@@ -157,21 +157,23 @@
                     v-model="formData.postalCode"
                     id="postal-code"
                     placeholder="우편번호"
-                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
+                    readonly
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent bg-gray-50"
                   />
                   <button
                     type="button"
                     @click="handleAddressSearch"
-                    class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                    class="px-4 py-2 bg-[#d52e38] text-white rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
                   >
-                    주소 검색
+                    검색
                   </button>
                 </div>
                 <input
                   v-model="formData.roadAddress"
                   id="road-address"
                   placeholder="도로명 주소"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
+                  readonly
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent bg-gray-50"
                 />
                 <input
                   v-model="formData.detailAddress"
@@ -180,27 +182,6 @@
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
                 />
               </div>
-            </div>
-
-            <div>
-              <label
-                for="budget"
-                class="block text-sm font-medium text-gray-700 mb-2"
-                >예상 금액</label
-              >
-              <select
-                v-model="formData.budget"
-                id="budget"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
-              >
-                <option value="">예상 금액대를 선택해주세요</option>
-                <option value="1000-3000">1,000만원 ~ 3,000만원</option>
-                <option value="3000-5000">3,000만원 ~ 5,000만원</option>
-                <option value="5000-1억">5,000만원 ~ 1억원</option>
-                <option value="1억-5억">1억원 ~ 5억원</option>
-                <option value="5억-10억">5억원 ~ 10억원</option>
-                <option value="10억+">10억원 이상</option>
-              </select>
             </div>
 
             <div>
@@ -250,6 +231,28 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import ContactInfo from "./ContactInfo.vue";
+
+// 카카오 주소 검색 API 타입 정의
+declare global {
+  interface Window {
+    daum: {
+      Postcode: new (options: {
+        oncomplete: (data: {
+          zonecode: string;
+          roadAddress: string;
+          jibunAddress: string;
+          buildingName: string;
+          apartment: string;
+        }) => void;
+        width?: string;
+        height?: string;
+      }) => {
+        open: () => void;
+        embed: (element: HTMLElement) => void;
+      };
+    };
+  }
+}
 
 interface Props {
   contacts: Array<{
@@ -328,7 +331,33 @@ const handleSubmit = () => {
 };
 
 const handleAddressSearch = () => {
-  emit("address-search");
+  // 카카오 주소 검색 API가 로드되었는지 확인
+  if (!window.daum || !window.daum.Postcode) {
+    alert(
+      "주소 검색 서비스를 불러올 수 없습니다. 페이지를 새로고침 후 다시 시도해주세요."
+    );
+    return;
+  }
+
+  new window.daum.Postcode({
+    oncomplete: function (data) {
+      // 우편번호와 주소 정보를 입력 필드에 자동 설정
+      formData.value.postalCode = data.zonecode;
+      formData.value.roadAddress = data.roadAddress;
+
+      // 상세주소 입력 필드에 포커스
+      setTimeout(() => {
+        const detailAddressInput = document.getElementById(
+          "detail-address"
+        ) as HTMLInputElement;
+        if (detailAddressInput) {
+          detailAddressInput.focus();
+        }
+      }, 100);
+    },
+    width: "100%",
+    height: "400px",
+  }).open();
 };
 
 onMounted(() => {
