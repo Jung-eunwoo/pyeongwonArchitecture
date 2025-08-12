@@ -10,6 +10,38 @@
   }
 }
 
+/* Global Word Break Settings */
+* {
+  word-break: keep-all;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Korean Text Specific Settings */
+html[lang="ko"] *,
+html *:lang(ko) {
+  word-break: keep-all;
+}
+
+/* Ensure proper line breaking for all text elements */
+p,
+span,
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+td,
+th,
+label,
+button {
+  word-break: keep-all;
+  word-wrap: break-word;
+}
+
 @keyframes slideUpFadeInDelay {
   0% {
     opacity: 0;
