@@ -122,28 +122,68 @@ const handler: Handler = async (
       inquiry_date: formData.inquiry_date,
     };
 
-    // 이메일 전송 실행
+    // 추가: 환경 설정 요약 로그 (민감정보 직접 출력 금지)
+    console.log("[contact] EmailJS config summary", {
+      serviceId,
+      templateId,
+      customerTemplateId,
+      publicKeyLen: publicKey?.length,
+      privateKeyLen: privateKey?.length,
+      privateKeyHead: privateKey ? privateKey.slice(0, 4) + "***" : undefined,
+    });
+
+    // 이메일 전송 실행 (각 단계 분리)
     try {
-      // 1. 회사로 견적 문의 이메일 전송
-      await emailjs.send(serviceId!, templateId!, templateParams, {
-        publicKey: publicKey!,
-        privateKey: privateKey!,
-      });
-      // 2. 고객에게 접수 확인 이메일 전송
-      await emailjs.send(serviceId!, customerTemplateId!, templateParams, {
-        publicKey: publicKey!,
-        privateKey: privateKey!,
-      });
-      console.log("Emails sent successfully for:", formData.customer_name);
+      const startTs = Date.now();
+      console.log("[contact] Sending company email...");
+      const companyRes = await emailjs.send(
+        serviceId!,
+        templateId!,
+        templateParams,
+        {
+          publicKey: publicKey!,
+          privateKey: privateKey!,
+        }
+      );
+      console.log(
+        "[contact] Company email result",
+        safeResult(companyRes),
+        `elapsed=${Date.now() - startTs}ms`
+      );
+
+      console.log("[contact] Sending customer confirmation email...");
+      const customerStart = Date.now();
+      const customerRes = await emailjs.send(
+        serviceId!,
+        customerTemplateId!,
+        templateParams,
+        { publicKey: publicKey!, privateKey: privateKey! }
+      );
+      console.log(
+        "[contact] Customer email result",
+        safeResult(customerRes),
+        `elapsed=${Date.now() - customerStart}ms`
+      );
+      console.log(
+        "[contact] Emails sent successfully for",
+        formData.customer_name
+      );
     } catch (emailError: any) {
-      console.error("EmailJS error raw:", emailError);
+      const diag = enrichEmailError(emailError);
+      console.error("[contact] EmailJS error detail", diag);
       return {
         statusCode: 502,
         headers,
         body: JSON.stringify({
           error: "Email delivery failed",
-          reason: emailError?.message || "Unknown EmailJS error",
-          suggestion: "서비스/템플릿/키 값 및 Private Key 재확인, quota 확인",
+          reason: diag.message || "Unknown EmailJS error",
+          which: diag.phase,
+          status: diag.status,
+          text: diag.text,
+          rawType: diag.rawType,
+          suggestion:
+            "서비스/템플릿/키 값 및 Private Key, 템플릿 연결 여부, customer 템플릿 ID 확인",
+          debugId: diag.debugId,
         }),
       };
     }
@@ -173,5 +213,43 @@ const handler: Handler = async (
     };
   }
 };
+
+// 안전하게 EmailJS 응답 로깅 형태 축약
+function safeResult(res: any) {
+  if (!res) return res;
+  try {
+    const { status, text } = res as any;
+    return { status, text };
+  } catch {
+    return { type: typeof res };
+  }
+}
+
+// 에러 세부 정보 추출
+function enrichEmailError(err: any) {
+  const debugId =
+    Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  const base: any = {
+    debugId,
+    phase: inferPhaseFromStack(err?.stack),
+    status: err?.status || err?.response?.status,
+    text: err?.text || err?.response?.text,
+    message: err?.message,
+    rawType: Object.prototype.toString.call(err),
+  };
+  // message가 없고 객체면 직렬화 시도
+  if (!base.message) {
+    try {
+      base.message = JSON.stringify(err).slice(0, 300);
+    } catch {}
+  }
+  return base;
+}
+
+function inferPhaseFromStack(stack?: string) {
+  if (!stack) return undefined;
+  if (stack.includes("customer")) return "customerTemplate";
+  return "companyTemplate"; // 대략적 추정
+}
 
 export { handler };
