@@ -45,32 +45,21 @@
             </div>
           </div>
           <div
-            class="bg-gray-100 rounded-lg p-8 fade-in-up-delay"
+            class="bg-gray-100 rounded-lg p-6 fade-in-up-delay"
             ref="imageRef"
           >
-            <div
-              class="w-full h-64 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center"
-            >
-              <div class="text-center">
-                <div
-                  class="h-16 w-16 mx-auto mb-4 bg-gray-400 rounded-full flex items-center justify-center"
-                >
-                  <svg
-                    class="h-8 w-8 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"
-                    />
-                  </svg>
-                </div>
-                <p class="text-gray-500 font-medium">평원건축 사무실</p>
-              </div>
+            <div class="w-full h-96 rounded-lg overflow-hidden shadow-lg">
+              <img
+                src="/pwarcitecture.png"
+                alt="평원건축 사무실"
+                class="w-full h-full object-cover object-center"
+              />
+            </div>
+            <div class="mt-4 text-center">
+              <p class="text-gray-700 font-medium">평원건축 사무실</p>
+              <p class="text-sm text-gray-500 mt-1">
+                {{ COMPANY_INFO.address.fullAddress }}
+              </p>
             </div>
           </div>
         </div>
@@ -95,6 +84,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import FeatureCard from "../FeatureCard.vue";
+import { COMPANY_INFO } from "../../constants/company-info";
 
 interface Props {
   features: Array<{

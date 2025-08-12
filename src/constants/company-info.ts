@@ -5,8 +5,8 @@ export const COMPANY_INFO = {
   fullName: "평원건축 주식회사",
 
   // 연락처 정보
-  phone: "02-1234-5678",
-  fax: "02-1234-5679",
+  phone: "032-205-5707",
+  fax: "032-205-5708",
   mobile: "010-1234-5678",
 
   // 이메일
@@ -16,9 +16,9 @@ export const COMPANY_INFO = {
   // 주소 정보
   address: {
     postalCode: "14662",
-    roadAddress: "경기 부천시 원미구 부흥로 442",
+    roadAddress: "부천시 원미구 부흥로 442",
     detailAddress: "1층",
-    fullAddress: "경기 부천시 원미구 부흥로 442, 1층",
+    fullAddress: "부천시 원미구 부흥로 442, 1층",
   },
 
   // 영업시간
@@ -33,13 +33,13 @@ export const COMPANY_INFO = {
     registrationNumber: "130-44-83437",
     representative: "김평원",
     establishedYear: 1994,
-    experience: 30,
+    experience: 40,
   },
 
   // 실적
   performance: {
     completedProjects: 500,
-    experienceYears: 30,
+    experienceYears: 40,
   },
 
   // 웹사이트 및 소셜미디어
