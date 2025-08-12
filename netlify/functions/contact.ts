@@ -48,27 +48,34 @@ const handler: Handler = async (
   }
 
   try {
-    // 환경 변수에서 EmailJS 설정 가져오기
-    const serviceId = process.env.EMAILJS_SERVICE_ID;
-    const templateId = process.env.EMAILJS_TEMPLATE_ID;
-    const customerTemplateId = process.env.EMAILJS_CUSTOMER_TEMPLATE_ID;
-    const privateKey = process.env.EMAILJS_PRIVATE_KEY;
-    const publicKey = process.env.EMAILJS_PUBLIC_KEY;
+    // 환경 변수에서 EmailJS 설정 가져오기 (VITE_ 접두사 fallback)
+    const serviceId = (process.env.EMAILJS_SERVICE_ID ||
+      process.env.VITE_EMAILJS_SERVICE_ID) as string | undefined;
+    const templateId = (process.env.EMAILJS_TEMPLATE_ID ||
+      process.env.VITE_EMAILJS_TEMPLATE_ID) as string | undefined;
+    const customerTemplateId = (process.env.EMAILJS_CUSTOMER_TEMPLATE_ID ||
+      process.env.VITE_EMAILJS_CUSTOMER_TEMPLATE_ID) as string | undefined;
+    const privateKey = process.env.EMAILJS_PRIVATE_KEY as string | undefined;
+    const publicKey = (process.env.EMAILJS_PUBLIC_KEY ||
+      process.env.VITE_EMAILJS_PUBLIC_KEY) as string | undefined;
 
-    if (
-      !serviceId ||
-      !templateId ||
-      !customerTemplateId ||
-      !privateKey ||
-      !publicKey
-    ) {
-      console.error("Missing EmailJS configuration");
+    const missing: string[] = [];
+    if (!serviceId) missing.push("EMAILJS_SERVICE_ID");
+    if (!templateId) missing.push("EMAILJS_TEMPLATE_ID");
+    if (!customerTemplateId) missing.push("EMAILJS_CUSTOMER_TEMPLATE_ID");
+    if (!publicKey) missing.push("EMAILJS_PUBLIC_KEY");
+    if (!privateKey) missing.push("EMAILJS_PRIVATE_KEY");
+
+    if (missing.length) {
+      console.error("Missing EmailJS configuration keys:", missing);
       return {
         statusCode: 500,
         headers,
         body: JSON.stringify({
           error: "Server configuration error",
           details: "EmailJS configuration is incomplete",
+          missing,
+          hint: "Netlify 환경변수에 위 키들을 정확히 추가하세요. PRIVATE_KEY 는 EmailJS Dashboard Account에서 확인.",
         }),
       };
     }
@@ -118,21 +125,27 @@ const handler: Handler = async (
     // 이메일 전송 실행
     try {
       // 1. 회사로 견적 문의 이메일 전송
-      await emailjs.send(serviceId, templateId, templateParams, {
-        publicKey: publicKey,
-        privateKey: privateKey,
+      await emailjs.send(serviceId!, templateId!, templateParams, {
+        publicKey: publicKey!,
+        privateKey: privateKey!,
       });
-
       // 2. 고객에게 접수 확인 이메일 전송
-      await emailjs.send(serviceId, customerTemplateId, templateParams, {
-        publicKey: publicKey,
-        privateKey: privateKey,
+      await emailjs.send(serviceId!, customerTemplateId!, templateParams, {
+        publicKey: publicKey!,
+        privateKey: privateKey!,
       });
-
       console.log("Emails sent successfully for:", formData.customer_name);
     } catch (emailError: any) {
-      console.error("EmailJS error:", emailError);
-      throw new Error(`Email sending failed: ${emailError.message}`);
+      console.error("EmailJS error raw:", emailError);
+      return {
+        statusCode: 502,
+        headers,
+        body: JSON.stringify({
+          error: "Email delivery failed",
+          reason: emailError?.message || "Unknown EmailJS error",
+          suggestion: "서비스/템플릿/키 값 및 Private Key 재확인, quota 확인",
+        }),
+      };
     }
 
     // 성공 응답
