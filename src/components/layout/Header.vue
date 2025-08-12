@@ -4,24 +4,8 @@
   >
     <div class="container mx-auto px-4 py-4">
       <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <div
-            class="h-8 w-8 bg-red-600 rounded flex items-center justify-center"
-          >
-            <svg
-              class="h-5 w-5 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"
-              />
-            </svg>
-          </div>
+        <div class="flex items-center space-x-3">
+          <img src="/logo.png" alt="평원건축 로고" class="h-10 w-auto" />
           <span class="text-2xl font-bold text-gray-900">평원건축</span>
         </div>
         <nav class="hidden md:flex space-x-8">
