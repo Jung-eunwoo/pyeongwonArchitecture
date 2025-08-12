@@ -11,15 +11,16 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
-    "@emailjs/browser": "^4.4.1",
+    "@emailjs/nodejs": "^5.0.2",
     "@tailwindcss/vite": "^4.1.11",
     "lucide-vue-next": "^0.525.0",
     "tailwindcss": "^4.1.11",
     "vue": "^3.5.17"
   },
   "devDependencies": {
+    "@netlify/functions": "^4.2.1",
     "@tsconfig/node22": "^22.0.2",
-    "@types/node": "^22.15.32",
+    "@types/node": "^22.17.1",
     "@vitejs/plugin-vue": "^6.0.0",
     "@vue/tsconfig": "^0.7.0",
     "autoprefixer": "^10.4.21",

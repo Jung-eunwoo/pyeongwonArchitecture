@@ -239,7 +239,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import ContactInfo from "./ContactInfo.vue";
-import emailjs from "@emailjs/browser";
 
 // 카카오 주소 검색 API 타입 정의
 declare global {
@@ -348,40 +347,11 @@ const handleSubmit = async () => {
     return;
   }
 
-  // EmailJS 설정 확인
-  const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-  const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-  const customerTemplateId = import.meta.env.VITE_EMAILJS_CUSTOMER_TEMPLATE_ID;
-  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
-  // 개발 모드에서 설정 확인
-  if (
-    !serviceId ||
-    !templateId ||
-    !customerTemplateId ||
-    !publicKey ||
-    serviceId === "your_service_id" ||
-    templateId === "your_template_id" ||
-    customerTemplateId === "your_customer_template_id" ||
-    publicKey === "your_public_key"
-  ) {
-    alert(`EmailJS 설정이 필요합니다.
-
-다음 단계를 따라주세요:
-1. https://www.emailjs.com/ 에서 계정 생성
-2. 서비스(Gmail/Outlook) 연결
-3. 이메일 템플릿 2개 생성
-4. .env 파일에 실제 값 입력
-
-자세한 설정 방법은 EMAILJS_SETUP.md 파일을 참고하세요.`);
-    return;
-  }
-
   isSubmitting.value = true;
 
   try {
-    // 이메일 템플릿에 전달할 데이터 준비
-    const templateParams = {
+    // 서버리스 함수로 전송할 데이터 준비
+    const requestData = {
       customer_name: formData.value.name,
       customer_phone: formData.value.phone,
       customer_email: formData.value.email,
@@ -406,11 +376,22 @@ const handleSubmit = async () => {
       }),
     };
 
-    // 1. 회사로 견적 문의 이메일 전송
-    await emailjs.send(serviceId, templateId, templateParams);
+    // 서버리스 함수로 이메일 전송 요청
+    const response = await fetch("/.netlify/functions/contact", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
 
-    // 2. 고객에게 접수 확인 이메일 전송
-    await emailjs.send(serviceId, customerTemplateId, templateParams);
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.error || `HTTP ${response.status}: ${response.statusText}`
+      );
+    }
 
     alert(
       "견적 문의가 성공적으로 전송되었습니다!\n빠른 시일 내에 연락드리겠습니다."
@@ -437,35 +418,14 @@ const handleSubmit = async () => {
 
     let errorMessage = "견적 문의 전송에 실패했습니다.";
 
-    if (error.status === 400) {
-      if (error.text?.includes("Public Key is invalid")) {
-        errorMessage = `EmailJS Public Key가 올바르지 않습니다.
-
-설정 방법:
-1. https://dashboard.emailjs.com/admin/account 접속
-2. Public Key 복사
-3. .env 파일의 VITE_EMAILJS_PUBLIC_KEY에 입력`;
-      } else if (error.text?.includes("Template ID")) {
-        errorMessage = `템플릿 ID가 올바르지 않습니다.
-
-확인 방법:
-1. https://dashboard.emailjs.com/admin/templates 접속
-2. 템플릿 ID 확인
-3. .env 파일의 템플릿 ID들 업데이트`;
-      } else if (error.text?.includes("Service ID")) {
-        errorMessage = `서비스 ID가 올바르지 않습니다.
-
-확인 방법:
-1. https://dashboard.emailjs.com/admin 접속
-2. 서비스 ID 확인
-3. .env 파일의 VITE_EMAILJS_SERVICE_ID 업데이트`;
-      }
+    // 네트워크 에러 처리
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      errorMessage = "네트워크 연결을 확인해주세요.";
+    } else if (error.message) {
+      errorMessage = `전송 실패: ${error.message}`;
     }
 
-    alert(
-      errorMessage +
-        "\n\n자세한 설정 방법은 EMAILJS_SETUP.md 파일을 참고하세요."
-    );
+    alert(errorMessage + "\n\n잠시 후 다시 시도해주세요.");
   } finally {
     isSubmitting.value = false;
   }
@@ -503,17 +463,6 @@ const handleAddressSearch = () => {
 
 onMounted(() => {
   setupIntersectionObserver();
-
-  // EmailJS 초기화 (설정된 경우에만)
-  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-  if (publicKey && publicKey !== "your_public_key") {
-    emailjs.init(publicKey);
-    console.log("✅ EmailJS 초기화 완료");
-  } else {
-    console.warn(
-      "⚠️ EmailJS가 설정되지 않았습니다. EMAILJS_QUICK_SETUP.md를 참고하세요."
-    );
-  }
 });
 
 onUnmounted(() => {

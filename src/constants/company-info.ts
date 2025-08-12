@@ -30,7 +30,7 @@ export const COMPANY_INFO = {
 
   // 사업자 정보
   business: {
-    registrationNumber: "123-45-67890",
+    registrationNumber: "130-44-83437",
     representative: "김평원",
     establishedYear: 1994,
     experience: 30,

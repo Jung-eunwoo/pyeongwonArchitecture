@@ -1,0 +1,63 @@
+[build]
+  # 빌드 명령어
+  command = "npm run build"
+  
+  # 빌드 결과물이 생성되는 디렉토리
+  publish = "dist"
+  
+  # Node.js 버전 설정
+  environment = { NODE_VERSION = "18" }
+
+# SPA(Single Page Application) 라우팅을 위한 리다이렉트 설정
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# 보안 헤더 설정
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # HTTPS 강제 설정
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    
+    # XSS 보호
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    
+    # 컨텐츠 보안 정책
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.emailjs.com https://t1.daumcdn.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.emailjs.com; frame-src 'self' https://t1.daumcdn.net;"
+
+# 정적 파일 캐싱 설정
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# 환경 변수 설정 (Netlify 대시보드에서도 설정 가능)
+# [build.environment]
+#   VITE_EMAILJS_SERVICE_ID = "your_service_id"
+#   VITE_EMAILJS_TEMPLATE_ID = "your_template_id"
+#   VITE_EMAILJS_CUSTOMER_TEMPLATE_ID = "your_customer_template_id"
+#   VITE_EMAILJS_PUBLIC_KEY = "your_public_key"
+
+# 빌드 플러그인 (선택사항)
+[[plugins]]
+  package = "@netlify/plugin-sitemap"
+
+# 404 에러 페이지 설정
+[[redirects]]
+  from = "/404"
+  to = "/index.html"
+  status = 200
