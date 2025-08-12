@@ -5,8 +5,8 @@
   # 빌드 결과물이 생성되는 디렉토리
   publish = "dist"
   
-  # Node.js 버전 (엔진 요구사항 >=18 대응)
-  environment = { NODE_VERSION = "18.20.4" }
+  # Node.js LTS 20 적용 (안정성 확보)
+  environment = { NODE_VERSION = "20.11.1" }
 
 # SPA(Single Page Application) 라우팅을 위한 리다이렉트 설정
 [[redirects]]
