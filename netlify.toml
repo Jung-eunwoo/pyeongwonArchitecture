@@ -5,8 +5,8 @@
   # 빌드 결과물이 생성되는 디렉토리
   publish = "dist"
   
-  # Node.js 버전 설정 (crypto.hash 에러 해결을 위해 16으로 변경)
-  environment = { NODE_VERSION = "16" }
+  # Node.js 버전 (엔진 요구사항 >=18 대응)
+  environment = { NODE_VERSION = "18.20.4" }
 
 # SPA(Single Page Application) 라우팅을 위한 리다이렉트 설정
 [[redirects]]
