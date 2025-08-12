@@ -35,8 +35,7 @@ export default defineConfig(async () => {
   }
 
   return {
-    base:
-      process.env.NODE_ENV === "production" ? "/pyeongwonArchitecture/" : "/",
+    base: "/", // Netlify root deploy: remove sub-path to prevent 404 -> index.html fallback (MIME text/html)
     plugins,
     build: {
       target: "esnext",
