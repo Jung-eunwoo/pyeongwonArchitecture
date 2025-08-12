@@ -5,8 +5,8 @@
   # 빌드 결과물이 생성되는 디렉토리
   publish = "dist"
   
-  # Node.js 버전 설정
-  environment = { NODE_VERSION = "18" }
+  # Node.js 버전 설정 (crypto.hash 에러 해결을 위해 16으로 변경)
+  environment = { NODE_VERSION = "16" }
 
 # SPA(Single Page Application) 라우팅을 위한 리다이렉트 설정
 [[redirects]]
@@ -52,9 +52,9 @@
 #   VITE_EMAILJS_CUSTOMER_TEMPLATE_ID = "your_customer_template_id"
 #   VITE_EMAILJS_PUBLIC_KEY = "your_public_key"
 
-# 빌드 플러그인 (선택사항)
-[[plugins]]
-  package = "@netlify/plugin-sitemap"
+# 빌드 플러그인 (일시적으로 비활성화)
+# [[plugins]]
+#   package = "@netlify/plugin-sitemap"
 
 # 404 에러 페이지 설정
 [[redirects]]
