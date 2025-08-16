@@ -7,7 +7,22 @@
     <title>평원건축 - 전문 건축사무소</title>
     <!-- 카카오 주소 검색 API -->
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <!-- Google tag (gtag.js) -->
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=${VITE_GA_ID}"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "${VITE_GA_ID}");
+    </script>
   </head>
+
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
