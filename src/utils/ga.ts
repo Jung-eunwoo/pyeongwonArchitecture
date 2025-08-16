@@ -8,6 +8,8 @@ export function initGA() {
   const s = document.createElement("script");
   s.async = true;
   s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+  s.onload = () => console.log("[GA] gtag loaded");
+  s.onerror = (e) => console.error("[GA] gtag load failed", e);
   document.head.appendChild(s);
 
   // gtag 초기화
