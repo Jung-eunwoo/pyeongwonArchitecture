@@ -27,8 +27,20 @@
     X-XSS-Protection = "1; mode=block"
     
     # 컨텐츠 보안 정책
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.emailjs.com https://t1.daumcdn.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.emailjs.com; frame-src 'self' https://t1.daumcdn.net https://postcode.map.daum.net;"
-
+    Content-Security-Policy = """
+      default-src 'self';
+      script-src 'self' 'unsafe-inline'
+        https://cdn.emailjs.com
+        https://t1.daumcdn.net
+        https://www.googletagmanager.com;
+      connect-src 'self'
+        https://api.emailjs.com
+        https://www.google-analytics.com
+        https://www.googletagmanager.com;
+      img-src 'self' data: https: https://www.google-analytics.com;
+      frame-src 'self' https://t1.daumcdn.net https://postcode.map.daum.net;
+    """
+    
 # 정적 파일 캐싱 설정
 [[headers]]
   for = "/assets/*"
