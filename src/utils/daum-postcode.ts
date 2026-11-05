@@ -29,7 +29,7 @@ declare global {
 
 let loadingPromise: Promise<void> | null = null;
 
-function loadPostcodeScript(): Promise<void> {
+export function loadPostcodeScript(): Promise<void> {
   if (window.daum?.Postcode) return Promise.resolve();
   if (loadingPromise) return loadingPromise;
 
@@ -49,12 +49,26 @@ function loadPostcodeScript(): Promise<void> {
   return loadingPromise;
 }
 
-export async function openPostcodeSearch(
-  oncomplete: (data: DaumPostcodeData) => void
-): Promise<void> {
-  await loadPostcodeScript();
+function openLoaded(oncomplete: (data: DaumPostcodeData) => void) {
   if (!window.daum?.Postcode) {
     throw new Error("우편번호 서비스를 불러오지 못했습니다.");
   }
   new window.daum.Postcode({ oncomplete, width: "100%", height: "400px" }).open();
+}
+
+// Postcode.open()은 팝업(window.open)을 띄우므로 클릭 핸들러 안에서 동기적으로 호출해야
+// 모바일 Safari 등의 팝업 차단에 걸리지 않는다. 이미 로드됐으면 즉시 연다.
+// (사전 로드는 loadPostcodeScript()를 버튼 focus/pointerenter 등에서 미리 호출)
+export function openPostcodeSearch(
+  oncomplete: (data: DaumPostcodeData) => void
+): Promise<void> {
+  if (window.daum?.Postcode) {
+    try {
+      openLoaded(oncomplete);
+      return Promise.resolve();
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+  return loadPostcodeScript().then(() => openLoaded(oncomplete));
 }

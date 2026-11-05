@@ -176,6 +176,8 @@
                   <button
                     type="button"
                     @click="handleAddressSearch"
+                    @pointerenter="preloadPostcode"
+                    @focus="preloadPostcode"
                     class="px-4 py-2 bg-[#d52e38] text-white rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
                   >
                     검색
@@ -333,7 +335,10 @@ import {
 } from "@/constants/company-info";
 import { FEATURES } from "@/constants/features";
 import { formatPhoneNumber } from "@/utils/phone";
-import { openPostcodeSearch } from "@/utils/daum-postcode";
+import {
+  loadPostcodeScript,
+  openPostcodeSearch,
+} from "@/utils/daum-postcode";
 
 interface Props {
   contacts: Array<{
@@ -379,9 +384,21 @@ const showStatus = (type: "success" | "error", text: string) => {
   statusMessage.value = { type, text };
 };
 
+// 사용자가 다시 입력을 시작하면 이전 오류 안내는 지운다
+watch(
+  [formData, privacyAgreed],
+  () => {
+    if (statusMessage.value?.type === "error") statusMessage.value = null;
+  },
+  { deep: true }
+);
+
 const handlePhoneInput = (event: Event) => {
   const input = event.target as HTMLInputElement;
-  formData.value.phone = formatPhoneNumber(input.value);
+  const formatted = formatPhoneNumber(input.value);
+  formData.value.phone = formatted;
+  // 포맷 결과가 이전 값과 같으면(문자·초과 입력) Vue가 다시 그리지 않으므로 DOM도 직접 맞춘다
+  if (input.value !== formatted) input.value = formatted;
 };
 
 // Refs for animation elements
@@ -402,6 +419,8 @@ const setupIntersectionObserver = () => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         entry.target.classList.add("is-visible");
+        // 폼이 보이면 우편번호 스크립트를 미리 받아 둔다 (클릭 시 팝업을 동기적으로 열기 위해)
+        if (entry.target === formRef.value) preloadPostcode();
       }
     });
   }, options);
@@ -528,6 +547,12 @@ const handleSubmit = async () => {
   } finally {
     isSubmitting.value = false;
   }
+};
+
+const preloadPostcode = () => {
+  loadPostcodeScript().catch(() => {
+    // 실패해도 클릭 시 다시 시도하므로 무시
+  });
 };
 
 const handleAddressSearch = async () => {

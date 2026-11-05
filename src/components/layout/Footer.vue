@@ -10,7 +10,7 @@
               <span class="text-2xl font-bold">{{ COMPANY_INFO.name }}</span>
             </div>
             <p class="text-gray-400 mb-4">
-              {{ COMPANY_INFO.performance.experienceYears }}년 경험의 전문성으로 고객의 꿈을 현실로 만드는 건축 및 인테리어
+              {{ COMPANY_STATS.experienceYears }}년 경험의 전문성으로 고객의 꿈을 현실로 만드는 건축 및 인테리어
               전문 회사입니다.
             </p>
             <div class="text-sm text-gray-400">
@@ -83,6 +83,7 @@
 import { ref } from "vue";
 import {
   COMPANY_INFO,
+  COMPANY_STATS,
   CONTACT_LINKS,
   SERVICES,
 } from "@/constants/company-info";

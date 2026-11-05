@@ -192,14 +192,21 @@ const handleNext = () => {
 // 좌우 스와이프
 const SWIPE_THRESHOLD = 40;
 let touchStartX = 0;
+let touchStartY = 0;
 
 const handleTouchStart = (event: TouchEvent) => {
   touchStartX = event.touches[0]?.clientX ?? 0;
+  touchStartY = event.touches[0]?.clientY ?? 0;
 };
 
 const handleTouchEnd = (event: TouchEvent) => {
-  const deltaX = (event.changedTouches[0]?.clientX ?? 0) - touchStartX;
-  if (Math.abs(deltaX) < SWIPE_THRESHOLD) return;
+  const touch = event.changedTouches[0];
+  if (!touch) return;
+  const deltaX = touch.clientX - touchStartX;
+  const deltaY = touch.clientY - touchStartY;
+  // 세로 스크롤 제스처(대각선 포함)는 슬라이드로 취급하지 않음
+  if (Math.abs(deltaX) < SWIPE_THRESHOLD || Math.abs(deltaX) <= Math.abs(deltaY))
+    return;
   if (deltaX > 0) handlePrev();
   else handleNext();
 };
