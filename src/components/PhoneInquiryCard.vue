@@ -20,10 +20,8 @@
     </a>
     <!-- 항목 단위로만 줄바꿈 ("일요일 / 휴무"처럼 끊기지 않게) -->
     <p class="mt-4 text-sm text-gray-500">
-      <span class="whitespace-nowrap">{{ COMPANY_INFO.businessHours.weekday }}</span>
-      ·
-      <span class="whitespace-nowrap">{{ COMPANY_INFO.businessHours.saturday }}</span>
-      ·
+      <span class="whitespace-nowrap">{{ COMPANY_INFO.businessHours.weekday }} ·</span>
+      <span class="whitespace-nowrap">{{ COMPANY_INFO.businessHours.saturday }} ·</span>
       <span class="whitespace-nowrap">{{ COMPANY_INFO.businessHours.sunday }}</span>
     </p>
   </div>

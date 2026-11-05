@@ -30,9 +30,14 @@ let observer: IntersectionObserver | null = null;
 onMounted(() => {
   const contact = document.getElementById("contact");
   if (!contact || typeof IntersectionObserver === "undefined") return;
-  observer = new IntersectionObserver(([entry]) => {
-    isContactVisible.value = !!entry?.isIntersecting;
-  });
+  // 섹션 윗부분(여백·제목)만 막 들어온 시점엔 전화 안내 카드가 아직 안 보이므로(v-reveal로 투명),
+  // 섹션이 화면 위쪽 60%까지 올라왔을 때부터 숨긴다.
+  observer = new IntersectionObserver(
+    ([entry]) => {
+      isContactVisible.value = !!entry?.isIntersecting;
+    },
+    { rootMargin: "0px 0px -40% 0px" }
+  );
   observer.observe(contact);
 });
 

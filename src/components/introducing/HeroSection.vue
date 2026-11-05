@@ -31,6 +31,8 @@
           >
             <Phone class="h-5 w-5" />
             전화로 무료 견적 받기
+            <!-- PC에서는 tel: 링크가 동작하지 않을 수 있어 번호를 함께 보여 준다 -->
+            <span class="hidden md:inline">· {{ COMPANY_INFO.phone }}</span>
           </a>
           <button
             v-else
@@ -56,6 +58,7 @@
 <script setup lang="ts">
 import { Phone } from "lucide-vue-next";
 import {
+  COMPANY_INFO,
   COMPANY_STATS,
   CONTACT_LINKS,
 } from "@/constants/company-info";

@@ -30,6 +30,7 @@
             :href="CONTACT_LINKS.tel"
             class="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-transparent bg-brand px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-dark lg:px-4"
             :aria-label="`전화 상담 ${COMPANY_INFO.phone}`"
+            :title="`전화 상담 ${COMPANY_INFO.phone}`"
           >
             <Phone class="h-4 w-4" />
             <span class="hidden lg:inline">{{ COMPANY_INFO.phone }}</span>
