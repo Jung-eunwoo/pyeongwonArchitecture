@@ -10,7 +10,7 @@ import skipFormatting from "@vue/eslint-config-prettier/skip-formatting";
 export default defineConfigWithVueTs(
   {
     name: "app/files-to-lint",
-    files: ["**/*.{ts,mts,vue}"],
+    files: ["**/*.{ts,mts,mjs,vue}"],
   },
   globalIgnores(["**/dist/**", "**/coverage/**", "**/.netlify/**"]),
   pluginVue.configs["flat/recommended"],
