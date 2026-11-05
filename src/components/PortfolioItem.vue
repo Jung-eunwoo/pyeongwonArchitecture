@@ -1,6 +1,11 @@
 <template>
   <div
+    ref="cardRef"
     class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow group"
+    @pointerenter="handlePointerEnter"
+    @pointerleave="isHovered = false"
+    @focusin="isFocused = true"
+    @focusout="handleFocusOut"
   >
     <div class="relative">
       <!-- 이미지 슬라이드 영역 -->
@@ -22,9 +27,13 @@
             :key="index"
             class="w-full flex-shrink-0 h-full"
           >
+            <!-- 카드가 화면 근처에 오면 모든 슬라이드 사진을 불러온다
+                 (브라우저 lazy 로딩은 가로로 숨겨진 슬라이드를 늦게 불러와 넘길 때 빈 화면이 보임) -->
             <img
+              v-if="hasEnteredView"
               :src="image"
               :alt="`${title} 이미지 ${index + 1}`"
+              decoding="async"
               class="w-full h-full object-cover"
               @error="handleImageError"
             />
@@ -128,7 +137,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 
 interface Props {
   title: string;
@@ -211,16 +220,45 @@ const handleTouchEnd = (event: TouchEvent) => {
   else handleNext();
 };
 
-// 자동 슬라이드 시작
-const startAutoSlide = () => {
-  if (props.images && props.images.length > 1) {
-    autoSlideInterval = setInterval(() => {
-      nextImage();
-    }, 4000); // 4초마다 자동 슬라이드
-  }
+// ── 자동 슬라이드 ──────────────────────────────
+// 화면에 보이고, 마우스/포커스가 없고, 동작 줄이기 설정이 아닐 때만 넘긴다.
+const AUTO_SLIDE_MS = 4000;
+
+const cardRef = ref<HTMLElement>();
+const isInView = ref(false);
+const hasEnteredView = ref(false);
+// 호버와 포커스는 따로 추적한다 (한쪽이 풀려도 다른 쪽이 남아 있으면 계속 멈춤)
+const isHovered = ref(false);
+const isFocused = ref(false);
+
+// 터치 탭은 호환 mouseenter만 발생하고 mouseleave가 오지 않아 영구 정지되므로 마우스만 처리
+const handlePointerEnter = (event: PointerEvent) => {
+  if (event.pointerType === "mouse") isHovered.value = true;
 };
 
-// 자동 슬라이드 정지
+// 카드 내부 요소 사이의 포커스 이동은 정지 상태를 유지
+const handleFocusOut = (event: FocusEvent) => {
+  const next = event.relatedTarget as Node | null;
+  if (!next || !cardRef.value?.contains(next)) isFocused.value = false;
+};
+const prefersReducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)"
+).matches;
+
+const shouldAutoSlide = computed(
+  () =>
+    props.images.length > 1 &&
+    isInView.value &&
+    !isHovered.value &&
+    !isFocused.value &&
+    !prefersReducedMotion
+);
+
+const startAutoSlide = () => {
+  if (!shouldAutoSlide.value || autoSlideInterval) return;
+  autoSlideInterval = setInterval(nextImage, AUTO_SLIDE_MS);
+};
+
 const stopAutoSlide = () => {
   if (autoSlideInterval) {
     clearInterval(autoSlideInterval);
@@ -228,11 +266,30 @@ const stopAutoSlide = () => {
   }
 };
 
+watch(shouldAutoSlide, (enabled) => (enabled ? startAutoSlide() : stopAutoSlide()));
+
+let observer: IntersectionObserver | null = null;
+
 onMounted(() => {
-  startAutoSlide();
+  // IntersectionObserver 미지원 환경에서는 바로 보이는 것으로 처리
+  if (!cardRef.value || typeof IntersectionObserver === "undefined") {
+    isInView.value = true;
+    hasEnteredView.value = true;
+    return;
+  }
+  observer = new IntersectionObserver(
+    ([entry]) => {
+      isInView.value = !!entry?.isIntersecting;
+      if (entry?.isIntersecting) hasEnteredView.value = true;
+    },
+    // 화면에 들어오기 300px 전부터 사진을 불러오기 시작
+    { rootMargin: "300px 0px" }
+  );
+  observer.observe(cardRef.value);
 });
 
 onUnmounted(() => {
+  observer?.disconnect();
   stopAutoSlide();
 });
 </script>
