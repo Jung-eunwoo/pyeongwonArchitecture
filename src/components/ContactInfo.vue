@@ -9,7 +9,10 @@
   >
     <component :is="icon" class="h-8 w-8 mb-3 text-brand" />
     <h3 class="font-semibold text-gray-900 mb-2">{{ title }}</h3>
-    <p class="text-gray-600" :class="{ 'underline-offset-4 hover:underline': href }">
+    <p
+      class="text-gray-600"
+      :class="{ 'underline-offset-4 hover:underline': href }"
+    >
       {{ content }}
     </p>
     <p v-if="subtitle" class="text-sm text-gray-500">{{ subtitle }}</p>

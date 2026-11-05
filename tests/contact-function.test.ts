@@ -4,7 +4,9 @@ import type { HandlerEvent } from "@netlify/functions";
 const send = vi.hoisted(() => vi.fn());
 vi.mock("@emailjs/nodejs", () => ({ default: { send } }));
 // 운영에서는 폼이 꺼져 있을 수 있으므로 테스트에서는 켠다
-vi.mock("../src/constants/features", () => ({ FEATURES: { inquiryForm: true } }));
+vi.mock("../src/constants/features", () => ({
+  FEATURES: { inquiryForm: true },
+}));
 
 const { handler } = await import("../netlify/functions/contact");
 
@@ -21,7 +23,9 @@ const body = {
   elapsed_ms: 10_000,
 };
 
-const call = (patch: Partial<HandlerEvent> & { headers?: Record<string, string> } = {}) =>
+const call = (
+  patch: Partial<HandlerEvent> & { headers?: Record<string, string> } = {}
+) =>
   handler(
     {
       httpMethod: "POST",
@@ -82,7 +86,9 @@ describe("contact function", () => {
 
   it("Origin이 없거나 다르면 403", async () => {
     expect((await call({ headers: { origin: "" } })).statusCode).toBe(403);
-    expect((await call({ headers: { origin: "https://evil.com" } })).statusCode).toBe(403);
+    expect(
+      (await call({ headers: { origin: "https://evil.com" } })).statusCode
+    ).toBe(403);
     expect(send).not.toHaveBeenCalled();
   });
 
@@ -92,7 +98,9 @@ describe("contact function", () => {
   });
 
   it("본문이 너무 크면 413", async () => {
-    const res = await call({ body: JSON.stringify({ ...body, message: "가".repeat(6000) }) });
+    const res = await call({
+      body: JSON.stringify({ ...body, message: "가".repeat(6000) }),
+    });
     expect(res.statusCode).toBe(413);
   });
 
@@ -101,13 +109,17 @@ describe("contact function", () => {
   });
 
   it("검증 실패는 400과 사유", async () => {
-    const res = await call({ body: JSON.stringify({ ...body, customer_email: "a@b.co?cc=x" }) });
+    const res = await call({
+      body: JSON.stringify({ ...body, customer_email: "a@b.co?cc=x" }),
+    });
     expect(res.statusCode).toBe(400);
     expect(JSON.parse(res.body).error).toMatch(/이메일/);
   });
 
   it("봇은 성공처럼 응답하고 메일은 보내지 않는다", async () => {
-    const res = await call({ body: JSON.stringify({ ...body, company_website: "spam" }) });
+    const res = await call({
+      body: JSON.stringify({ ...body, company_website: "spam" }),
+    });
     expect(res.statusCode).toBe(200);
     expect(send).not.toHaveBeenCalled();
   });
@@ -125,7 +137,9 @@ describe("contact function", () => {
   });
 
   it("고객 메일만 실패하면 접수 완료(200)로 응답한다", async () => {
-    send.mockResolvedValueOnce({ status: 200 }).mockRejectedValueOnce({ status: 400 });
+    send
+      .mockResolvedValueOnce({ status: 200 })
+      .mockRejectedValueOnce({ status: 400 });
     expect((await call()).statusCode).toBe(200);
   });
 });

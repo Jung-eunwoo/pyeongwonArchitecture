@@ -15,7 +15,10 @@ export function useActiveSection(sectionIds: readonly string[]) {
 
   const observe = () => {
     observer?.disconnect();
-    const bottomMargin = Math.max(window.innerHeight - ACTIVE_LINE_OFFSET - 1, 0);
+    const bottomMargin = Math.max(
+      window.innerHeight - ACTIVE_LINE_OFFSET - 1,
+      0
+    );
     observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {

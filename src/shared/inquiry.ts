@@ -152,7 +152,10 @@ export function validateInquiry(input: unknown): InquiryValidationResult {
 
   // 봇 판정은 사유를 알려주지 않는다
   if (str(body.company_website)) return { ok: false, bot: true };
-  if (typeof body.elapsed_ms !== "number" || body.elapsed_ms < MIN_FILL_TIME_MS) {
+  if (
+    typeof body.elapsed_ms !== "number" ||
+    body.elapsed_ms < MIN_FILL_TIME_MS
+  ) {
     return { ok: false, bot: true };
   }
 

@@ -2,20 +2,18 @@
   <!-- 견적 문의 폼 (FEATURES.inquiryForm이 켜졌을 때만 ContactUsSection이 비동기로 불러온다) -->
   <div
     ref="formCardRef"
-    class="bg-white rounded-lg shadow-md p-8 mb-12 fade-in-up-delay"
     v-reveal
+    class="bg-white rounded-lg shadow-md p-8 mb-12 fade-in-up-delay"
   >
-    <form @submit.prevent="handleSubmit" class="space-y-6">
+    <form class="space-y-6" @submit.prevent="handleSubmit">
       <div class="grid md:grid-cols-2 gap-6">
         <div>
-          <label
-            for="name"
-            class="block text-sm font-medium text-gray-700 mb-2"
+          <label for="name" class="block text-sm font-medium text-gray-700 mb-2"
             >이름 *</label
           >
           <input
-            v-model="formData.name"
             id="name"
+            v-model="formData.name"
             type="text"
             :maxlength="INQUIRY_LIMITS.name"
             autocomplete="name"
@@ -31,9 +29,8 @@
             >연락처 *</label
           >
           <input
-            :value="formData.phone"
-            @input="handlePhoneInput"
             id="phone"
+            :value="formData.phone"
             aria-describedby="phone-hint"
             type="tel"
             inputmode="numeric"
@@ -42,6 +39,7 @@
             placeholder="010-0000-0000"
             required
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+            @input="handlePhoneInput"
           />
           <p id="phone-hint" class="text-sm text-gray-500">
             ※실제 연락을 받을 수 있는 번호를 입력해주세요.
@@ -50,14 +48,12 @@
       </div>
 
       <div>
-        <label
-          for="email"
-          class="block text-sm font-medium text-gray-700 mb-2"
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-2"
           >이메일 *</label
         >
         <input
-          v-model="formData.email"
           id="email"
+          v-model="formData.email"
           aria-describedby="email-hint"
           type="email"
           :maxlength="INQUIRY_LIMITS.email"
@@ -79,8 +75,8 @@
             >공사 예정일</label
           >
           <input
-            v-model="formData.constructionDate"
             id="construction-date"
+            v-model="formData.constructionDate"
             type="date"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
           />
@@ -92,8 +88,8 @@
             >공사 구분 *</label
           >
           <select
-            v-model="formData.constructionType"
             id="construction-type"
+            v-model="formData.constructionType"
             required
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
           >
@@ -111,14 +107,12 @@
 
       <div class="grid md:grid-cols-2 gap-6">
         <div>
-          <label
-            for="area"
-            class="block text-sm font-medium text-gray-700 mb-2"
+          <label for="area" class="block text-sm font-medium text-gray-700 mb-2"
             >평형</label
           >
           <select
-            v-model="formData.area"
             id="area"
+            v-model="formData.area"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
           >
             <option value="">평형을 선택해주세요</option>
@@ -138,8 +132,8 @@
             >예상 금액</label
           >
           <select
-            v-model="formData.budget"
             id="budget"
+            v-model="formData.budget"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
           >
             <option value="">예상 금액대를 선택해주세요</option>
@@ -162,8 +156,8 @@
         <div class="space-y-3">
           <div class="flex gap-2">
             <input
-              v-model="formData.postalCode"
               id="postal-code"
+              v-model="formData.postalCode"
               placeholder="우편번호"
               aria-label="우편번호"
               readonly
@@ -171,27 +165,27 @@
             />
             <button
               type="button"
+              aria-label="주소 검색"
+              class="px-4 py-2 bg-brand text-white rounded-md border border-transparent hover:bg-brand-dark transition-colors whitespace-nowrap"
               @click="handleAddressSearch"
               @pointerenter="preloadPostcode"
               @focus="preloadPostcode"
-              aria-label="주소 검색"
-              class="px-4 py-2 bg-brand text-white rounded-md border border-transparent hover:bg-brand-dark transition-colors whitespace-nowrap"
             >
               검색
             </button>
           </div>
           <input
-            v-model="formData.roadAddress"
             id="road-address"
+            v-model="formData.roadAddress"
             placeholder="도로명 주소"
             aria-label="도로명 주소"
             readonly
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent bg-gray-50"
           />
           <input
-            v-model="formData.detailAddress"
-            ref="detailAddressRef"
             id="detail-address"
+            ref="detailAddressRef"
+            v-model="formData.detailAddress"
             :maxlength="INQUIRY_LIMITS.address"
             placeholder="상세 주소"
             aria-label="상세 주소"
@@ -207,8 +201,8 @@
           >문의 내용</label
         >
         <textarea
-          v-model="formData.message"
           id="message"
+          v-model="formData.message"
           :maxlength="INQUIRY_LIMITS.message"
           placeholder="프로젝트에 대한 상세한 내용을 알려주세요"
           rows="5"
@@ -221,8 +215,8 @@
         <!-- 브라우저 자동완성이 채우지 않도록 의미 없는 이름/라벨을 쓴다 (채워지면 실제 문의가 조용히 버려짐) -->
         <label for="hp-field">이 칸은 비워 두세요</label>
         <input
-          v-model="honeypot"
           id="hp-field"
+          v-model="honeypot"
           type="text"
           name="hp_field"
           tabindex="-1"
@@ -233,8 +227,8 @@
       <!-- 개인정보 수집·이용 동의 (필수) -->
       <div class="rounded-md border border-gray-200 bg-gray-50 p-4">
         <p class="mb-3 text-sm text-gray-600">
-          수집 항목: {{ PRIVACY_POLICY.items.required.join(", ") }} (필수)
-          · 이용 목적: {{ PRIVACY_POLICY.purpose }} · 보유 기간:
+          수집 항목: {{ PRIVACY_POLICY.items.required.join(", ") }} (필수) ·
+          이용 목적: {{ PRIVACY_POLICY.purpose }} · 보유 기간:
           {{ PRIVACY_POLICY.retention }}
         </p>
         <div class="flex flex-wrap items-center justify-between gap-2">
@@ -243,8 +237,8 @@
             class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-800"
           >
             <input
-              v-model="privacyAgreed"
               id="privacy-agreed"
+              v-model="privacyAgreed"
               type="checkbox"
               required
               class="h-4 w-4 accent-brand"
@@ -298,10 +292,7 @@ import { ref, reactive, watch, onMounted, onUnmounted } from "vue";
 import PrivacyPolicyDialog from "./PrivacyPolicyDialog.vue";
 import { PRIVACY_POLICY } from "@/constants/company-info";
 import { formatPhoneNumber } from "@/utils/phone";
-import {
-  loadPostcodeScript,
-  openPostcodeSearch,
-} from "@/utils/daum-postcode";
+import { loadPostcodeScript, openPostcodeSearch } from "@/utils/daum-postcode";
 import {
   AREA_OPTIONS,
   BUDGET_OPTIONS,
@@ -310,7 +301,6 @@ import {
   createEmptyInquiryForm,
   type InquiryRequest,
 } from "@/shared/inquiry";
-
 
 // 폼 상태는 이 컴포넌트가 소유한다
 const formData = reactive(createEmptyInquiryForm());

@@ -95,7 +95,7 @@
 
 <script setup lang="ts">
 import { ref, useId } from "vue";
-import { X } from "lucide-vue-next";
+import { X } from "@lucide/vue";
 import { COMPANY_INFO, PRIVACY_POLICY } from "@/constants/company-info";
 
 const dialogRef = ref<HTMLDialogElement>();

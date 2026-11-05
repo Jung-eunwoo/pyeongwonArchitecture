@@ -79,8 +79,12 @@ describe("validateInquiry", () => {
       expect(errorOf({ customer_email: email })).toMatch(/이메일/);
     });
     it("일반 주소·국제화 도메인(punycode)은 통과", () => {
-      expect(errorOf({ customer_email: "first.last+tag@mail.co.kr" })).toBeNull();
-      expect(errorOf({ customer_email: "hong@example.xn--3e0b707e" })).toBeNull();
+      expect(
+        errorOf({ customer_email: "first.last+tag@mail.co.kr" })
+      ).toBeNull();
+      expect(
+        errorOf({ customer_email: "hong@example.xn--3e0b707e" })
+      ).toBeNull();
     });
   });
 

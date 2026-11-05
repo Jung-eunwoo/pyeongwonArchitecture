@@ -53,7 +53,11 @@ function openLoaded(oncomplete: (data: DaumPostcodeData) => void) {
   if (!window.daum?.Postcode) {
     throw new Error("우편번호 서비스를 불러오지 못했습니다.");
   }
-  new window.daum.Postcode({ oncomplete, width: "100%", height: "400px" }).open();
+  new window.daum.Postcode({
+    oncomplete,
+    width: "100%",
+    height: "400px",
+  }).open();
 }
 
 // Postcode.open()은 팝업(window.open)을 띄우므로 클릭 핸들러 안에서 동기적으로 호출해야
