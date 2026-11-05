@@ -195,18 +195,21 @@ export const PORTFOLIO_PROJECTS = [
 // 연락처 목록 (UI 표시용)
 export const CONTACT_LIST = [
   {
+    id: "phone",
     icon: "Phone",
     title: "전화 문의",
     content: COMPANY_INFO.phone,
     subtitle: COMPANY_INFO.businessHours.weekday,
   },
   {
+    id: "email",
     icon: "Mail",
     title: "이메일 문의",
     content: COMPANY_INFO.email,
     subtitle: "24시간 접수 가능",
   },
   {
+    id: "location",
     icon: "MapPin",
     title: "오시는 길",
     content: COMPANY_INFO.address.roadAddress,

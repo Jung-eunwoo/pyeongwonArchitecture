@@ -1,5 +1,6 @@
 import { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
 import emailjs from "@emailjs/nodejs";
+import { FEATURES } from "../../src/constants/features";
 
 interface ContactFormData {
   customer_name: string;
@@ -35,6 +36,15 @@ const handler: Handler = async (
       statusCode: 200,
       headers,
       body: "",
+    };
+  }
+
+  // 폼 문의 비활성화 중에는 직접 호출도 받지 않음 (스팸 메일 발송 방지)
+  if (!FEATURES.inquiryForm) {
+    return {
+      statusCode: 503,
+      headers,
+      body: JSON.stringify({ error: "Inquiry form is disabled" }),
     };
   }
 
