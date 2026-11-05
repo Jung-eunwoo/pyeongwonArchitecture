@@ -51,7 +51,7 @@ import {
   MapPin,
   Phone,
   Users,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import HeroSection from "../components/introducing/HeroSection.vue";
 import AboutSection from "../components/introducing/AboutSection.vue";
 import ServicesSection from "../components/introducing/ServicesSection.vue";
@@ -117,7 +117,9 @@ const contacts = CONTACT_LIST.filter(
 const scrollToSection = (sectionId: string) => {
   const section = document.getElementById(sectionId);
   if (!section) return;
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
   section.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
   if (!section.hasAttribute("tabindex")) section.setAttribute("tabindex", "-1");
   section.focus({ preventScroll: true });

@@ -83,7 +83,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
-import { Menu, Phone, X } from "lucide-vue-next";
+import { Menu, Phone, X } from "@lucide/vue";
 import { COMPANY_INFO, CONTACT_LINKS } from "@/constants/company-info";
 import NavigationItem from "./NavigationItem.vue";
 

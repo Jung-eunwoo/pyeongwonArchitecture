@@ -165,7 +165,12 @@ const handler: Handler = async (event) => {
 
   let phase: "company" | "customer" = "company";
   try {
-    await emailjs.send(config.serviceId, config.templateId, templateParams, keys);
+    await emailjs.send(
+      config.serviceId,
+      config.templateId,
+      templateParams,
+      keys
+    );
     phase = "customer";
     await emailjs.send(
       config.serviceId,

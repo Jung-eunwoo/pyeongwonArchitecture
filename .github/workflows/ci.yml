@@ -1,6 +1,6 @@
 name: CI
 
-# 배포는 Netlify가 담당한다. 여기서는 테스트·타입 체크·빌드를 확인한다.
+# 배포는 Netlify가 담당한다. 여기서는 린트·서식·테스트·타입 체크·빌드·취약점을 확인한다.
 on:
   push:
     branches: ["master"]
@@ -30,6 +30,16 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+      # high 이상만 실패로 본다 (개발 도구의 moderate는 Dependabot으로 따라간다)
+      - name: Audit
+        run: npm audit --audit-level=high
 
       - name: Test
         run: npm test

@@ -15,8 +15,8 @@
         <p
           class="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed animate-slide-up-delay-1"
         >
-          평원건축은 {{ COMPANY_STATS.experienceYears }}년의 경험과 노하우로 고객의 꿈을 실현하는 전문 건축 및
-          인테리어 회사입니다.
+          평원건축은 {{ COMPANY_STATS.experienceYears }}년의 경험과 노하우로
+          고객의 꿈을 실현하는 전문 건축 및 인테리어 회사입니다.
           <br />
           주거공간부터 상업공간까지, 완벽한 설계와 시공으로 만족을 드립니다.
         </p>
@@ -37,15 +37,15 @@
           <button
             v-else
             type="button"
-            @click="scrollToSection('contact')"
             class="px-8 py-3 text-white font-medium rounded-lg border border-transparent hover:bg-brand-dark transition-colors bg-brand"
+            @click="scrollToSection('contact')"
           >
             무료 견적 받기
           </button>
           <button
             type="button"
-            @click="scrollToSection('portfolio')"
             class="px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+            @click="scrollToSection('portfolio')"
           >
             포트폴리오 보기
           </button>
@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { Phone } from "lucide-vue-next";
+import { Phone } from "@lucide/vue";
 import {
   COMPANY_INFO,
   COMPANY_STATS,

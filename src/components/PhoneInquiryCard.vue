@@ -1,8 +1,8 @@
 <template>
   <!-- 전화 문의 안내 (폼 비활성화 시, 또는 폼을 불러오지 못했을 때) -->
   <div
-    class="bg-white rounded-lg shadow-md px-6 py-10 mb-12 text-center fade-in-up-delay"
     v-reveal
+    class="bg-white rounded-lg shadow-md px-6 py-10 mb-12 text-center fade-in-up-delay"
   >
     <Phone class="mx-auto mb-4 h-12 w-12 text-brand" />
     <p class="mb-2 text-lg font-semibold text-gray-900">
@@ -20,14 +20,20 @@
     </a>
     <!-- 항목 단위로만 줄바꿈 ("일요일 / 휴무"처럼 끊기지 않게) -->
     <p class="mt-4 text-sm text-gray-500">
-      <span class="whitespace-nowrap">{{ COMPANY_INFO.businessHours.weekday }} ·</span>
-      <span class="whitespace-nowrap">{{ COMPANY_INFO.businessHours.saturday }} ·</span>
-      <span class="whitespace-nowrap">{{ COMPANY_INFO.businessHours.sunday }}</span>
+      <span class="whitespace-nowrap"
+        >{{ COMPANY_INFO.businessHours.weekday }} ·</span
+      >
+      <span class="whitespace-nowrap"
+        >{{ COMPANY_INFO.businessHours.saturday }} ·</span
+      >
+      <span class="whitespace-nowrap">{{
+        COMPANY_INFO.businessHours.sunday
+      }}</span>
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Phone } from "lucide-vue-next";
+import { Phone } from "@lucide/vue";
 import { COMPANY_INFO, CONTACT_LINKS } from "@/constants/company-info";
 </script>

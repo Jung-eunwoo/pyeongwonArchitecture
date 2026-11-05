@@ -2,7 +2,7 @@
   <section id="contact" class="py-20 bg-gray-50">
     <div class="container mx-auto px-4">
       <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-16 fade-in-up" v-reveal>
+        <div v-reveal class="text-center mb-16 fade-in-up">
           <h2 class="text-4xl font-bold text-gray-900 mb-4">견적 문의</h2>
           <p class="text-lg text-gray-600">무료 상담 및 견적을 받아보세요</p>
         </div>
@@ -13,9 +13,9 @@
         <PhoneInquiryCard v-else />
 
         <div
+          v-reveal
           class="grid gap-8 text-center stagger-animation"
           :class="contacts.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'"
-          v-reveal
         >
           <ContactInfo
             v-for="contact in contacts"

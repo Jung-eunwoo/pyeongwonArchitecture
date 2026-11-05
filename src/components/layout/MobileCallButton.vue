@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import { Phone } from "lucide-vue-next";
+import { Phone } from "@lucide/vue";
 import { COMPANY_INFO, CONTACT_LINKS } from "@/constants/company-info";
 
 const isContactVisible = ref(false);

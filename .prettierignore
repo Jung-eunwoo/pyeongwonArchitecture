@@ -1,0 +1,9 @@
+dist
+.netlify
+coverage
+package-lock.json
+public
+email-templates
+docs
+# scripts/image-variants.py가 생성
+src/constants/portfolio-images.json

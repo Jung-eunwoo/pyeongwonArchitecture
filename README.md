@@ -2,7 +2,7 @@
 
 부천 평원건축(신축·증축·리모델링) 소개 및 견적 문의 사이트입니다.
 
-- **스택**: Vue 3 · TypeScript · Vite 7 · Tailwind CSS v4 · lucide-vue-next
+- **스택**: Vue 3 · TypeScript · Vite 7 · Tailwind CSS v4 · @lucide/vue
 - **호스팅**: Netlify (정적 사이트 + Netlify Functions)
 
 ## 시작하기

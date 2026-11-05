@@ -59,10 +59,10 @@
             v-for="(_, index) in images"
             :key="index"
             type="button"
-            @click="goTo(index)"
             class="p-3"
             :aria-label="`${index + 1}번째 사진 보기`"
             :aria-current="currentImageIndex === index ? 'true' : undefined"
+            @click="goTo(index)"
           >
             <span
               class="block w-2 h-2 rounded-full transition-colors"
@@ -75,9 +75,9 @@
         <button
           v-if="images.length > 1"
           type="button"
-          @click="handlePrev"
           aria-label="이전 사진"
           class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-opacity pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 focus-visible:opacity-100"
+          @click="handlePrev"
         >
           <svg
             class="w-4 h-4"
@@ -97,9 +97,9 @@
         <button
           v-if="images.length > 1"
           type="button"
-          @click="handleNext"
           aria-label="다음 사진"
           class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-opacity pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 focus-visible:opacity-100"
+          @click="handleNext"
         >
           <svg
             class="w-4 h-4"
@@ -120,9 +120,13 @@
         <button
           v-if="images.length > 1 && !prefersReducedMotion"
           type="button"
-          @click="isUserPaused = !isUserPaused"
           class="absolute bottom-2 right-2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
-          :aria-label="isUserPaused ? `${title} 사진 자동 넘김 재생` : `${title} 사진 자동 넘김 정지`"
+          :aria-label="
+            isUserPaused
+              ? `${title} 사진 자동 넘김 재생`
+              : `${title} 사진 자동 넘김 정지`
+          "
+          @click="isUserPaused = !isUserPaused"
         >
           <Play v-if="isUserPaused" class="h-3.5 w-3.5" />
           <Pause v-else class="h-3.5 w-3.5" />
@@ -158,7 +162,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
-import { Pause, Play } from "lucide-vue-next";
+import { Pause, Play } from "@lucide/vue";
 import { getResponsiveImageAttrs } from "@/utils/responsive-image";
 
 interface Props {
@@ -243,7 +247,10 @@ const handleTouchEnd = (event: TouchEvent) => {
   const deltaX = touch.clientX - touchStartX;
   const deltaY = touch.clientY - touchStartY;
   // 세로 스크롤 제스처(대각선 포함)는 슬라이드로 취급하지 않음
-  if (Math.abs(deltaX) < SWIPE_THRESHOLD || Math.abs(deltaX) <= Math.abs(deltaY))
+  if (
+    Math.abs(deltaX) < SWIPE_THRESHOLD ||
+    Math.abs(deltaX) <= Math.abs(deltaY)
+  )
     return;
   if (deltaX > 0) handlePrev();
   else handleNext();
@@ -303,7 +310,9 @@ const stopAutoSlide = () => {
   }
 };
 
-watch(shouldAutoSlide, (enabled) => (enabled ? startAutoSlide() : stopAutoSlide()));
+watch(shouldAutoSlide, (enabled) =>
+  enabled ? startAutoSlide() : stopAutoSlide()
+);
 
 let observer: IntersectionObserver | null = null;
 
