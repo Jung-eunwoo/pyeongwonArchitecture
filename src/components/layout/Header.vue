@@ -15,16 +15,26 @@
           <span class="text-2xl font-bold text-gray-900">평원건축</span>
         </div>
 
-        <!-- 데스크톱 메뉴 -->
-        <nav class="hidden md:flex space-x-8" aria-label="주요 메뉴">
-          <NavigationItem
-            v-for="item in navItems"
-            :key="item.id"
-            :label="item.label"
-            :is-active="activeSection === item.id"
-            @click="scrollToSection(item.id)"
-          />
-        </nav>
+        <!-- 데스크톱 메뉴 + 전화 버튼 (태블릿 폭에서는 아이콘만) -->
+        <div class="hidden md:flex md:items-center md:gap-6 lg:gap-8">
+          <nav class="flex space-x-6 lg:space-x-8" aria-label="주요 메뉴">
+            <NavigationItem
+              v-for="item in navItems"
+              :key="item.id"
+              :label="item.label"
+              :is-active="activeSection === item.id"
+              @click="scrollToSection(item.id)"
+            />
+          </nav>
+          <a
+            :href="CONTACT_LINKS.tel"
+            class="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-transparent bg-brand px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-dark lg:px-4"
+            :aria-label="`전화 상담 ${COMPANY_INFO.phone}`"
+          >
+            <Phone class="h-4 w-4" />
+            <span class="hidden lg:inline">{{ COMPANY_INFO.phone }}</span>
+          </a>
+        </div>
 
         <!-- 모바일 메뉴 토글 -->
         <button
@@ -69,7 +79,8 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
-import { Menu, X } from "lucide-vue-next";
+import { Menu, Phone, X } from "lucide-vue-next";
+import { COMPANY_INFO, CONTACT_LINKS } from "@/constants/company-info";
 import NavigationItem from "./NavigationItem.vue";
 
 interface Props {

@@ -13,15 +13,18 @@
     </p>
     <a
       :href="CONTACT_LINKS.tel"
-      class="inline-flex items-center gap-2 rounded-lg bg-brand px-8 py-3 text-lg font-bold text-white transition-opacity hover:opacity-90"
+      class="inline-flex items-center gap-2 rounded-lg border border-transparent bg-brand px-8 py-3 text-lg font-bold text-white transition-colors hover:bg-brand-dark"
     >
       <Phone class="h-5 w-5" />
       {{ COMPANY_INFO.phone }}
     </a>
+    <!-- 항목 단위로만 줄바꿈 ("일요일 / 휴무"처럼 끊기지 않게) -->
     <p class="mt-4 text-sm text-gray-500">
-      {{ COMPANY_INFO.businessHours.weekday }} ·
-      {{ COMPANY_INFO.businessHours.saturday }} ·
-      {{ COMPANY_INFO.businessHours.sunday }}
+      <span class="whitespace-nowrap">{{ COMPANY_INFO.businessHours.weekday }}</span>
+      ·
+      <span class="whitespace-nowrap">{{ COMPANY_INFO.businessHours.saturday }}</span>
+      ·
+      <span class="whitespace-nowrap">{{ COMPANY_INFO.businessHours.sunday }}</span>
     </p>
   </div>
 </template>
