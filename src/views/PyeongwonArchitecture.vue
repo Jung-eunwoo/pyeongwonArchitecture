@@ -29,6 +29,8 @@
 
     <!-- Footer -->
     <Footer />
+
+    <MobileCallButton />
   </div>
 </template>
 
@@ -52,6 +54,7 @@ import PortfolioSection from "../components/introducing/PortfolioSection.vue";
 import ContactUsSection from "../components/ContactUsSection.vue";
 import Header from "../components/layout/Header.vue";
 import Footer from "../components/layout/Footer.vue";
+import MobileCallButton from "../components/layout/MobileCallButton.vue";
 import {
   COMPANY_STATS,
   NAV_ITEMS,

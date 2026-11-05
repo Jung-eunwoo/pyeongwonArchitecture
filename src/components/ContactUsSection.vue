@@ -24,6 +24,7 @@
                   v-model="formData.name"
                   id="name"
                   type="text"
+                  autocomplete="name"
                   placeholder="성함을 입력해주세요"
                   required
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
@@ -36,9 +37,13 @@
                   >연락처 *</label
                 >
                 <input
-                  v-model="formData.phone"
+                  :value="formData.phone"
+                  @input="handlePhoneInput"
                   id="phone"
                   type="tel"
+                  inputmode="numeric"
+                  autocomplete="tel"
+                  maxlength="13"
                   placeholder="010-0000-0000"
                   required
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
@@ -59,6 +64,7 @@
                 v-model="formData.email"
                 id="email"
                 type="email"
+                autocomplete="email"
                 placeholder="example@email.com"
                 required
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
@@ -165,11 +171,13 @@
                     id="postal-code"
                     placeholder="우편번호"
                     readonly
-                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent bg-gray-50"
+                    class="min-w-0 flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent bg-gray-50"
                   />
                   <button
                     type="button"
                     @click="handleAddressSearch"
+                    @pointerenter="preloadPostcode"
+                    @focus="preloadPostcode"
                     class="px-4 py-2 bg-[#d52e38] text-white rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
                   >
                     검색
@@ -184,6 +192,7 @@
                 />
                 <input
                   v-model="formData.detailAddress"
+                  ref="detailAddressRef"
                   id="detail-address"
                   placeholder="상세 주소"
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
@@ -237,6 +246,20 @@
               </div>
             </div>
 
+            <p
+              v-if="statusMessage"
+              role="status"
+              aria-live="polite"
+              class="rounded-md px-4 py-3 text-sm"
+              :class="
+                statusMessage.type === 'success'
+                  ? 'bg-green-50 text-green-800'
+                  : 'bg-red-50 text-red-700'
+              "
+            >
+              {{ statusMessage.text }}
+            </p>
+
             <div class="text-center">
               <button
                 type="submit"
@@ -264,7 +287,7 @@
             공사 내용을 말씀해 주시면 상담 후 견적을 안내해 드립니다.
           </p>
           <a
-            :href="telHref"
+            :href="CONTACT_LINKS.tel"
             class="inline-flex items-center gap-2 rounded-lg bg-[#d52e38] px-8 py-3 text-lg font-bold text-white transition-opacity hover:opacity-90"
           >
             <Phone class="h-5 w-5" />
@@ -292,6 +315,7 @@
             :title="contact.title"
             :content="contact.content"
             :subtitle="contact.subtitle"
+            :href="contact.href"
           />
         </div>
       </div>
@@ -304,32 +328,17 @@ import { ref, watch, onMounted, onUnmounted, type Component } from "vue";
 import { Phone } from "lucide-vue-next";
 import ContactInfo from "./ContactInfo.vue";
 import PrivacyPolicyDialog from "./PrivacyPolicyDialog.vue";
-import { COMPANY_INFO, PRIVACY_POLICY } from "@/constants/company-info";
+import {
+  COMPANY_INFO,
+  CONTACT_LINKS,
+  PRIVACY_POLICY,
+} from "@/constants/company-info";
 import { FEATURES } from "@/constants/features";
-
-const telHref = `tel:${COMPANY_INFO.phone.replace(/-/g, "")}`;
-
-// 카카오 주소 검색 API 타입 정의
-declare global {
-  interface Window {
-    daum: {
-      Postcode: new (options: {
-        oncomplete: (data: {
-          zonecode: string;
-          roadAddress: string;
-          jibunAddress: string;
-          buildingName: string;
-          apartment: string;
-        }) => void;
-        width?: string;
-        height?: string;
-      }) => {
-        open: () => void;
-        embed: (element: HTMLElement) => void;
-      };
-    };
-  }
-}
+import { formatPhoneNumber } from "@/utils/phone";
+import {
+  loadPostcodeScript,
+  openPostcodeSearch,
+} from "@/utils/daum-postcode";
 
 interface Props {
   contacts: Array<{
@@ -337,6 +346,7 @@ interface Props {
     title: string;
     content: string;
     subtitle?: string;
+    href?: string;
   }>;
   form: {
     name: string;
@@ -366,10 +376,36 @@ const isSubmitting = ref(false);
 const privacyAgreed = ref(false);
 const privacyDialogRef = ref<InstanceType<typeof PrivacyPolicyDialog>>();
 
+// 제출 결과/검증 오류를 alert 대신 폼 안에 표시
+const statusMessage = ref<{ type: "success" | "error"; text: string } | null>(
+  null
+);
+const showStatus = (type: "success" | "error", text: string) => {
+  statusMessage.value = { type, text };
+};
+
+// 사용자가 다시 입력을 시작하면 이전 오류 안내는 지운다
+watch(
+  [formData, privacyAgreed],
+  () => {
+    if (statusMessage.value?.type === "error") statusMessage.value = null;
+  },
+  { deep: true }
+);
+
+const handlePhoneInput = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const formatted = formatPhoneNumber(input.value);
+  formData.value.phone = formatted;
+  // 포맷 결과가 이전 값과 같으면(문자·초과 입력) Vue가 다시 그리지 않으므로 DOM도 직접 맞춘다
+  if (input.value !== formatted) input.value = formatted;
+};
+
 // Refs for animation elements
 const titleRef = ref<HTMLElement>();
 const formRef = ref<HTMLElement>();
 const contactsRef = ref<HTMLElement>();
+const detailAddressRef = ref<HTMLInputElement>();
 
 let observer: IntersectionObserver;
 
@@ -383,6 +419,8 @@ const setupIntersectionObserver = () => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         entry.target.classList.add("is-visible");
+        // 폼이 보이면 우편번호 스크립트를 미리 받아 둔다 (클릭 시 팝업을 동기적으로 열기 위해)
+        if (entry.target === formRef.value) preloadPostcode();
       }
     });
   }, options);
@@ -414,16 +452,17 @@ const handleSubmit = async () => {
     !formData.value.email ||
     !formData.value.constructionType
   ) {
-    alert("필수 항목을 모두 입력해주세요.");
+    showStatus("error", "필수 항목을 모두 입력해주세요.");
     return;
   }
 
   if (!privacyAgreed.value) {
-    alert("개인정보 수집·이용에 동의해주세요.");
+    showStatus("error", "개인정보 수집·이용에 동의해주세요.");
     return;
   }
 
   isSubmitting.value = true;
+  statusMessage.value = null;
 
   try {
     // 서버리스 함수로 전송할 데이터 준비
@@ -470,8 +509,9 @@ const handleSubmit = async () => {
       );
     }
 
-    alert(
-      "견적 문의가 성공적으로 전송되었습니다!\n빠른 시일 내에 연락드리겠습니다."
+    showStatus(
+      "success",
+      "견적 문의가 접수되었습니다. 빠른 시일 내에 연락드리겠습니다."
     );
 
     // 폼 초기화
@@ -503,40 +543,33 @@ const handleSubmit = async () => {
       errorMessage = `전송 실패: ${error.message}`;
     }
 
-    alert(errorMessage + "\n\n잠시 후 다시 시도해주세요.");
+    showStatus("error", `${errorMessage} 잠시 후 다시 시도해주세요.`);
   } finally {
     isSubmitting.value = false;
   }
 };
 
-const handleAddressSearch = () => {
-  // 카카오 주소 검색 API가 로드되었는지 확인
-  if (!window.daum || !window.daum.Postcode) {
-    alert(
-      "주소 검색 서비스를 불러올 수 없습니다. 페이지를 새로고침 후 다시 시도해주세요."
-    );
-    return;
-  }
+const preloadPostcode = () => {
+  loadPostcodeScript().catch(() => {
+    // 실패해도 클릭 시 다시 시도하므로 무시
+  });
+};
 
-  new window.daum.Postcode({
-    oncomplete: function (data) {
-      // 우편번호와 주소 정보를 입력 필드에 자동 설정
+const handleAddressSearch = async () => {
+  try {
+    await openPostcodeSearch((data) => {
       formData.value.postalCode = data.zonecode;
       formData.value.roadAddress = data.roadAddress;
 
-      // 상세주소 입력 필드에 포커스
-      setTimeout(() => {
-        const detailAddressInput = document.getElementById(
-          "detail-address"
-        ) as HTMLInputElement;
-        if (detailAddressInput) {
-          detailAddressInput.focus();
-        }
-      }, 100);
-    },
-    width: "100%",
-    height: "400px",
-  }).open();
+      // 상세주소 입력으로 포커스 이동
+      setTimeout(() => detailAddressRef.value?.focus(), 100);
+    });
+  } catch {
+    showStatus(
+      "error",
+      "주소 검색 서비스를 불러올 수 없습니다. 잠시 후 다시 시도해주세요."
+    );
+  }
 };
 
 onMounted(() => {
