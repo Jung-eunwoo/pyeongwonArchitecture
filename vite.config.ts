@@ -49,7 +49,7 @@ function pretendardSubset(): Plugin {
 const isDev = process.env.NODE_ENV !== "production";
 
 // 동적 설정 (devtools는 개발시에만 동적 import)
-export default defineConfig(async () => {
+export default defineConfig(async ({ isSsrBuild }) => {
   const plugins: PluginOption[] = [vue(), tailwindcss(), pretendardSubset()];
 
   if (isDev) {
@@ -66,6 +66,8 @@ export default defineConfig(async () => {
     plugins,
     build: {
       target: "esnext",
+      // 프리렌더용 SSR 번들(dist-ssr)은 곧 지우므로 public/(이미지 등)을 복사하지 않는다
+      copyPublicDir: !isSsrBuild,
     },
     resolve: {
       alias: {
