@@ -7,11 +7,9 @@ export const COMPANY_INFO = {
   // 연락처 정보
   phone: "032-205-5707",
   fax: "032-205-5708",
-  mobile: "010-1234-5678",
 
   // 이메일
   email: "pw83437@naver.com",
-  supportEmail: "support@pyeongwon.co.kr",
 
   // 주소 정보
   address: {
@@ -31,25 +29,24 @@ export const COMPANY_INFO = {
   // 사업자 정보
   business: {
     registrationNumber: "130-44-83437",
-    representative: "김평원",
-    establishedYear: 1994,
-    experience: 40,
   },
 
-  // 실적
+  // 실적 (화면의 "N년 경험" 문구는 모두 experienceYears 하나만 참조)
   performance: {
     completedProjects: 500,
     experienceYears: 40,
   },
 
-  // 웹사이트 및 소셜미디어
-  website: "https://www.pyeongwon.co.kr",
-  social: {
-    facebook: "",
-    instagram: "",
-    youtube: "",
-    blog: "",
-  },
+  website: "https://pyeongwon-architecture.netlify.app",
+} as const;
+
+// 링크용 값 (tel:, mailto:, 지도)
+export const CONTACT_LINKS = {
+  tel: `tel:${COMPANY_INFO.phone.replace(/-/g, "")}`,
+  mailto: `mailto:${COMPANY_INFO.email}`,
+  map: `https://map.naver.com/p/search/${encodeURIComponent(
+    COMPANY_INFO.address.roadAddress
+  )}`,
 } as const;
 
 // 회사 실적
@@ -129,55 +126,55 @@ export const PORTFOLIO_PROJECTS = [
     title: "순창한옥전체뉴모델링",
     type: "주거공간",
     images: [
-      "/images/portfolio/sunchang-hanok-1.jpg",
-      "/images/portfolio/sunchang-hanok-2.jpg",
-      "/images/portfolio/sunchang-hanok-3.jpg",
+      "/images/portfolio/sunchang-hanok-1.webp",
+      "/images/portfolio/sunchang-hanok-2.webp",
+      "/images/portfolio/sunchang-hanok-3.webp",
     ],
   },
   {
     title: "부천옥길동신축공사",
     type: "신축공사",
     images: [
-      "/images/portfolio/bucheon-okgil-1.jpg",
-      "/images/portfolio/bucheon-okgil-2.jpg",
-      "/images/portfolio/bucheon-okgil-3.jpg",
+      "/images/portfolio/bucheon-okgil-1.webp",
+      "/images/portfolio/bucheon-okgil-2.webp",
+      "/images/portfolio/bucheon-okgil-3.webp",
     ],
   },
   {
     title: "부천범박동신축공사",
     type: "신축공사",
     images: [
-      "/images/portfolio/bucheon-beombak-1.jpg",
-      "/images/portfolio/bucheon-beombak-2.jpg",
-      "/images/portfolio/bucheon-beombak-3.jpg",
+      "/images/portfolio/bucheon-beombak-1.webp",
+      "/images/portfolio/bucheon-beombak-2.webp",
+      "/images/portfolio/bucheon-beombak-3.webp",
     ],
   },
   {
     title: "둔천동 천우교회 뉴모델링",
     type: "리모델링",
     images: [
-      "/images/portfolio/duncheon-church-1.jpg",
-      "/images/portfolio/duncheon-church-2.jpg",
-      "/images/portfolio/duncheon-church-3.jpg",
+      "/images/portfolio/duncheon-church-1.webp",
+      "/images/portfolio/duncheon-church-2.webp",
+      "/images/portfolio/duncheon-church-3.webp",
     ],
   },
   {
     title: "김포 상가주택 신축",
     type: "신축",
     images: [
-      "/images/portfolio/gimpo-commercial-1.jpg",
-      "/images/portfolio/gimpo-commercial-2.jpg",
-      "/images/portfolio/gimpo-commercial-3.jpg",
-      "/images/portfolio/gimpo-commercial-4.jpg",
+      "/images/portfolio/gimpo-commercial-1.webp",
+      "/images/portfolio/gimpo-commercial-2.webp",
+      "/images/portfolio/gimpo-commercial-3.webp",
+      "/images/portfolio/gimpo-commercial-4.webp",
     ],
   },
   {
     title: "화곡동 pc방 뉴모델링",
     type: "리모델링",
     images: [
-      "/images/portfolio/hwagok-pcroom-1.jpg",
-      "/images/portfolio/hwagok-pcroom-2.jpg",
-      "/images/portfolio/hwagok-pcroom-3.jpg",
+      "/images/portfolio/hwagok-pcroom-1.webp",
+      "/images/portfolio/hwagok-pcroom-2.webp",
+      "/images/portfolio/hwagok-pcroom-3.webp",
     ],
   },
 ] as const;
@@ -185,36 +182,44 @@ export const PORTFOLIO_PROJECTS = [
 // 연락처 목록 (UI 표시용)
 export const CONTACT_LIST = [
   {
+    id: "phone",
     icon: "Phone",
     title: "전화 문의",
     content: COMPANY_INFO.phone,
     subtitle: COMPANY_INFO.businessHours.weekday,
+    href: CONTACT_LINKS.tel,
   },
   {
+    id: "email",
     icon: "Mail",
     title: "이메일 문의",
     content: COMPANY_INFO.email,
     subtitle: "24시간 접수 가능",
+    href: CONTACT_LINKS.mailto,
   },
   {
+    id: "location",
     icon: "MapPin",
     title: "오시는 길",
     content: COMPANY_INFO.address.roadAddress,
     subtitle: COMPANY_INFO.address.detailAddress,
+    href: CONTACT_LINKS.map,
   },
 ] as const;
 
-// 견적 문의 폼 초기값
-export const INITIAL_FORM_DATA = {
-  name: "",
-  phone: "",
-  email: "",
-  constructionDate: "",
-  constructionType: "",
-  area: "",
-  postalCode: "",
-  roadAddress: "",
-  detailAddress: "",
-  budget: "",
-  message: "",
+// 개인정보 수집·이용 고지 (개인정보 보호법 제15조, 제22조)
+// ※ 보유기간·위탁 내용은 실제 운영 방식에 맞게 확인 후 수정하세요.
+export const PRIVACY_POLICY = {
+  effectiveDate: "2026-11-05",
+  items: {
+    required: ["이름", "연락처", "이메일", "공사 구분"],
+    optional: ["공사 예정일", "평형", "예상 금액", "공사 예정지 주소", "문의 내용"],
+  },
+  purpose: "견적 문의 접수, 상담 및 견적 안내를 위한 연락",
+  retention: "문의 처리 완료 후 1년간 보관 후 파기",
+  // 처리 위탁 (메일 발송 / 웹사이트 호스팅)
+  processors: [
+    { name: "EmailJS", task: "견적 문의 메일 발송" },
+    { name: "Netlify", task: "웹사이트 호스팅 및 문의 접수 서버 운영" },
+  ],
 } as const;

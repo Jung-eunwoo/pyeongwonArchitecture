@@ -1,45 +1,47 @@
 [build]
-  # 빌드 명령어
   command = "npm run build"
-  
-  # 빌드 결과물이 생성되는 디렉토리
   publish = "dist"
-  
-  # Node.js LTS 20 적용 (안정성 확보)
-  environment = { NODE_VERSION = "20.11.1" }
+  # Node.js 22 LTS (Vite 7은 Node 20.19+ 필요). 로컬/CI는 .nvmrc와 맞춤
+  environment = { NODE_VERSION = "22" }
 
 # 단일 페이지(라우터 없음)이므로 SPA 리다이렉트를 두지 않는다.
 # (/* → /index.html 을 두면 없는 JS/CSS 요청에도 HTML이 200으로 내려가 MIME 오류가 난다)
 
-# 보안 헤더 설정
+# 보안 헤더
 [[headers]]
   for = "/*"
   [headers.values]
-    # HTTPS 강제 설정
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
-    
-    # XSS 보호
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    
-    # 컨텐츠 보안 정책
+
+    # style-src / font-src 를 명시하지 않으면 default-src('self')가 적용되어
+    # 외부 스타일·폰트가 차단됨. 폰트는 self-host 하므로 'self'로 충분.
+    # GA4는 region1.google-analytics.com 등 서브도메인으로 수집 요청을 보냄.
     Content-Security-Policy = """
       default-src 'self';
       script-src 'self' 'unsafe-inline'
-        https://cdn.emailjs.com
         https://t1.daumcdn.net
         https://www.googletagmanager.com;
+      style-src 'self' 'unsafe-inline';
+      font-src 'self' data:;
       connect-src 'self'
-        https://api.emailjs.com
-        https://www.google-analytics.com
+        https://*.google-analytics.com
+        https://*.analytics.google.com
         https://www.googletagmanager.com;
-      img-src 'self' data: https: https://www.google-analytics.com;
+      img-src 'self' data: https:;
       frame-src 'self' https://t1.daumcdn.net https://postcode.map.daum.net;
     """
-    
-# 정적 파일 캐싱 설정
+
+# Vite 빌드 결과물(파일명에 해시 포함)은 영구 캐시
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# 이미지는 파일명에 해시가 없으므로 immutable 대신 1주일 캐시
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"

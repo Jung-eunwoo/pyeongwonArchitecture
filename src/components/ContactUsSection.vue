@@ -8,6 +8,8 @@
         </div>
 
         <div
+          v-if="FEATURES.inquiryForm"
+          ref="formCardRef"
           class="bg-white rounded-lg shadow-md p-8 mb-12 fade-in-up-delay"
           v-reveal
         >
@@ -23,6 +25,8 @@
                   v-model="formData.name"
                   id="name"
                   type="text"
+                  :maxlength="INQUIRY_LIMITS.name"
+                  autocomplete="name"
                   placeholder="성함을 입력해주세요"
                   required
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
@@ -35,9 +39,13 @@
                   >연락처 *</label
                 >
                 <input
-                  v-model="formData.phone"
+                  :value="formData.phone"
+                  @input="handlePhoneInput"
                   id="phone"
                   type="tel"
+                  inputmode="numeric"
+                  autocomplete="tel"
+                  maxlength="13"
                   placeholder="010-0000-0000"
                   required
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
@@ -58,6 +66,8 @@
                 v-model="formData.email"
                 id="email"
                 type="email"
+                :maxlength="INQUIRY_LIMITS.email"
+                autocomplete="email"
                 placeholder="example@email.com"
                 required
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
@@ -94,17 +104,13 @@
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                 >
                   <option value="">공사 구분을 선택해주세요</option>
-                  <option value="신축">신축 (새로운 건물 건설)</option>
-                  <option value="증축">증축 (기존 건물 확장)</option>
-                  <option value="외관리모델링">
-                    외관 리모델링 (외부 개보수)
+                  <option
+                    v-for="option in CONSTRUCTION_TYPES"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
                   </option>
-                  <option value="내부리모델링">내부 리모델링 (인테리어)</option>
-                  <option value="전체리모델링">
-                    전체 리모델링 (내외부 전면 개보수)
-                  </option>
-                  <option value="구조변경">구조 변경 및 보강</option>
-                  <option value="기타">기타 (상담 시 문의)</option>
                 </select>
               </div>
             </div>
@@ -122,11 +128,13 @@
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                 >
                   <option value="">평형을 선택해주세요</option>
-                  <option value="10-20">10평 ~ 20평</option>
-                  <option value="20-30">20평 ~ 30평</option>
-                  <option value="30-40">30평 ~ 40평</option>
-                  <option value="40-50">40평 ~ 50평</option>
-                  <option value="50+">50평 이상</option>
+                  <option
+                    v-for="option in AREA_OPTIONS"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </option>
                 </select>
               </div>
               <div>
@@ -141,12 +149,13 @@
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                 >
                   <option value="">예상 금액대를 선택해주세요</option>
-                  <option value="1000-3000">1,000만원 ~ 3,000만원</option>
-                  <option value="3000-5000">3,000만원 ~ 5,000만원</option>
-                  <option value="5000-1억">5,000만원 ~ 1억원</option>
-                  <option value="1억-5억">1억원 ~ 5억원</option>
-                  <option value="5억-10억">5억원 ~ 10억원</option>
-                  <option value="10억+">10억원 이상</option>
+                  <option
+                    v-for="option in BUDGET_OPTIONS"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </option>
                 </select>
               </div>
             </div>
@@ -164,11 +173,13 @@
                     id="postal-code"
                     placeholder="우편번호"
                     readonly
-                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent bg-gray-50"
+                    class="min-w-0 flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent bg-gray-50"
                   />
                   <button
                     type="button"
                     @click="handleAddressSearch"
+                    @pointerenter="preloadPostcode"
+                    @focus="preloadPostcode"
                     class="px-4 py-2 bg-brand text-white rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
                   >
                     검색
@@ -183,7 +194,9 @@
                 />
                 <input
                   v-model="formData.detailAddress"
+                  ref="detailAddressRef"
                   id="detail-address"
+                  :maxlength="INQUIRY_LIMITS.address"
                   placeholder="상세 주소"
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                 />
@@ -199,11 +212,71 @@
               <textarea
                 v-model="formData.message"
                 id="message"
+                :maxlength="INQUIRY_LIMITS.message"
                 placeholder="프로젝트에 대한 상세한 내용을 알려주세요"
                 rows="5"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
               ></textarea>
             </div>
+
+            <!-- 스팸 방지용 honeypot: 사람에게는 보이지 않고, 봇만 채우는 필드 -->
+            <div class="hidden" aria-hidden="true">
+              <!-- 브라우저 자동완성이 채우지 않도록 의미 없는 이름/라벨을 쓴다 (채워지면 실제 문의가 조용히 버려짐) -->
+              <label for="hp-field">이 칸은 비워 두세요</label>
+              <input
+                v-model="honeypot"
+                id="hp-field"
+                type="text"
+                name="hp_field"
+                tabindex="-1"
+                autocomplete="off"
+              />
+            </div>
+
+            <!-- 개인정보 수집·이용 동의 (필수) -->
+            <div class="rounded-md border border-gray-200 bg-gray-50 p-4">
+              <p class="mb-3 text-sm text-gray-600">
+                수집 항목: {{ PRIVACY_POLICY.items.required.join(", ") }} (필수)
+                · 이용 목적: {{ PRIVACY_POLICY.purpose }} · 보유 기간:
+                {{ PRIVACY_POLICY.retention }}
+              </p>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <label
+                  for="privacy-agreed"
+                  class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-800"
+                >
+                  <input
+                    v-model="privacyAgreed"
+                    id="privacy-agreed"
+                    type="checkbox"
+                    required
+                    class="h-4 w-4 accent-brand"
+                  />
+                  개인정보 수집·이용에 동의합니다. (필수)
+                </label>
+                <button
+                  type="button"
+                  class="text-sm text-gray-500 underline hover:text-gray-700"
+                  @click="privacyDialogRef?.open()"
+                >
+                  전문 보기
+                </button>
+              </div>
+            </div>
+
+            <p
+              v-if="statusMessage"
+              role="status"
+              aria-live="polite"
+              class="rounded-md px-4 py-3 text-sm"
+              :class="
+                statusMessage.type === 'success'
+                  ? 'bg-green-50 text-green-800'
+                  : 'bg-red-50 text-red-700'
+              "
+            >
+              {{ statusMessage.text }}
+            </p>
 
             <div class="text-center">
               <button
@@ -218,8 +291,39 @@
           </form>
         </div>
 
+        <!-- 폼 비활성화 시: 전화 문의 안내 -->
         <div
-          class="grid md:grid-cols-3 gap-8 text-center stagger-animation"
+          v-else
+          class="bg-white rounded-lg shadow-md px-6 py-10 mb-12 text-center fade-in-up-delay"
+          v-reveal
+        >
+          <Phone class="mx-auto mb-4 h-12 w-12 text-brand" />
+          <p class="mb-2 text-lg font-semibold text-gray-900">
+            견적 문의는 전화로 받고 있습니다
+          </p>
+          <p class="mb-6 text-gray-600">
+            공사 내용을 말씀해 주시면 상담 후 견적을 안내해 드립니다.
+          </p>
+          <a
+            :href="CONTACT_LINKS.tel"
+            class="inline-flex items-center gap-2 rounded-lg bg-brand px-8 py-3 text-lg font-bold text-white transition-opacity hover:opacity-90"
+          >
+            <Phone class="h-5 w-5" />
+            {{ COMPANY_INFO.phone }}
+          </a>
+          <p class="mt-4 text-sm text-gray-500">
+            {{ COMPANY_INFO.businessHours.weekday }} ·
+            {{ COMPANY_INFO.businessHours.saturday }} ·
+            {{ COMPANY_INFO.businessHours.sunday }}
+          </p>
+        </div>
+
+        <!-- v-if/v-else 체인 밖에 둔다 (사이에 끼면 v-else가 깨짐) -->
+        <PrivacyPolicyDialog v-if="FEATURES.inquiryForm" ref="privacyDialogRef" />
+
+        <div
+          class="grid gap-8 text-center stagger-animation"
+          :class="contacts.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'"
           v-reveal
         >
           <ContactInfo
@@ -229,6 +333,7 @@
             :title="contact.title"
             :content="contact.content"
             :subtitle="contact.subtitle"
+            :href="contact.href"
           />
         </div>
       </div>
@@ -237,160 +342,186 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, watch, onMounted, onUnmounted, type Component } from "vue";
+import { Phone } from "lucide-vue-next";
 import ContactInfo from "./ContactInfo.vue";
-import { INITIAL_FORM_DATA } from "@/constants/company-info";
+import PrivacyPolicyDialog from "./PrivacyPolicyDialog.vue";
+import {
+  COMPANY_INFO,
+  CONTACT_LINKS,
+  PRIVACY_POLICY,
+} from "@/constants/company-info";
+import { FEATURES } from "@/constants/features";
+import { formatPhoneNumber } from "@/utils/phone";
+import {
+  loadPostcodeScript,
+  openPostcodeSearch,
+} from "@/utils/daum-postcode";
+import {
+  AREA_OPTIONS,
+  BUDGET_OPTIONS,
+  CONSTRUCTION_TYPES,
+  INQUIRY_LIMITS,
+  createEmptyInquiryForm,
+  type InquiryRequest,
+} from "@/shared/inquiry";
 
-// 카카오 주소 검색 API 타입 정의
-declare global {
-  interface Window {
-    daum: {
-      Postcode: new (options: {
-        oncomplete: (data: {
-          zonecode: string;
-          roadAddress: string;
-          jibunAddress: string;
-          buildingName: string;
-          apartment: string;
-        }) => void;
-        width?: string;
-        height?: string;
-      }) => {
-        open: () => void;
-        embed: (element: HTMLElement) => void;
-      };
-    };
-  }
-}
-
-interface Props {
+defineProps<{
   contacts: Array<{
-    icon: any;
+    icon: Component;
     title: string;
     content: string;
     subtitle?: string;
+    href?: string;
   }>;
-}
-
-defineProps<Props>();
+}>();
 
 // 폼 상태는 이 컴포넌트가 소유한다
-type InquiryFormData = { -readonly [K in keyof typeof INITIAL_FORM_DATA]: string };
-const createEmptyForm = (): InquiryFormData => ({ ...INITIAL_FORM_DATA });
-const formData = reactive(createEmptyForm());
+const formData = reactive(createEmptyInquiryForm());
+const privacyAgreed = ref(false);
 const isSubmitting = ref(false);
 
+// 스팸 방지: honeypot 값과 폼이 화면에 뜬 시각
+const honeypot = ref("");
+let formShownAt = Date.now();
+
+const privacyDialogRef = ref<InstanceType<typeof PrivacyPolicyDialog>>();
+const detailAddressRef = ref<HTMLInputElement>();
+const formCardRef = ref<HTMLElement>();
+
+// 제출 결과/검증 오류를 alert 대신 폼 안에 표시
+type StatusMessage = { type: "success" | "error"; text: string };
+const statusMessage = ref<StatusMessage | null>(null);
+const showStatus = (type: StatusMessage["type"], text: string) => {
+  statusMessage.value = { type, text };
+};
+
+// 사용자가 다시 입력을 시작하면 이전 오류 안내는 지운다
+watch(
+  [formData, privacyAgreed],
+  () => {
+    if (statusMessage.value?.type === "error") statusMessage.value = null;
+  },
+  { deep: true }
+);
+
+const handlePhoneInput = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const formatted = formatPhoneNumber(input.value);
+  formData.phone = formatted;
+  // 포맷 결과가 이전 값과 같으면(문자·초과 입력) Vue가 다시 그리지 않으므로 DOM도 직접 맞춘다
+  if (input.value !== formatted) input.value = formatted;
+};
+
+const resetForm = () => {
+  Object.assign(formData, createEmptyInquiryForm());
+  privacyAgreed.value = false;
+  formShownAt = Date.now();
+};
+
+const toRequest = (): InquiryRequest => ({
+  customer_name: formData.name,
+  customer_phone: formData.phone,
+  customer_email: formData.email,
+  construction_type: formData.constructionType,
+  construction_date: formData.constructionDate,
+  area: formData.area,
+  budget: formData.budget,
+  postal_code: formData.postalCode,
+  road_address: formData.roadAddress,
+  detail_address: formData.detailAddress,
+  message: formData.message,
+  privacy_agreed: privacyAgreed.value,
+  company_website: honeypot.value,
+  elapsed_ms: Date.now() - formShownAt,
+});
+
 const handleSubmit = async () => {
-  // 필수 필드 검증
   if (
     !formData.name ||
     !formData.phone ||
     !formData.email ||
     !formData.constructionType
   ) {
-    alert("필수 항목을 모두 입력해주세요.");
+    showStatus("error", "필수 항목을 모두 입력해주세요.");
+    return;
+  }
+
+  if (!privacyAgreed.value) {
+    showStatus("error", "개인정보 수집·이용에 동의해주세요.");
     return;
   }
 
   isSubmitting.value = true;
+  statusMessage.value = null;
 
   try {
-    // 서버리스 함수로 전송할 데이터 준비
-    const requestData = {
-      customer_name: formData.name,
-      customer_phone: formData.phone,
-      customer_email: formData.email,
-      construction_date: formData.constructionDate || "미정",
-      construction_type: formData.constructionType,
-      area: formData.area || "미정",
-      budget: formData.budget || "미정",
-      postal_code: formData.postalCode || "",
-      road_address: formData.roadAddress || "",
-      detail_address: formData.detailAddress || "",
-      full_address:
-        `${formData.postalCode ? `(${formData.postalCode}) ` : ""}${
-          formData.roadAddress || ""
-        } ${formData.detailAddress || ""}`.trim() || "미입력",
-      message: formData.message || "특별한 요청사항 없음",
-      inquiry_date: new Date().toLocaleDateString("ko-KR", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    };
-
-    // 서버리스 함수로 이메일 전송 요청
+    // 기본값("미정" 등) 채우기와 접수 시각 기록은 서버에서 처리
     const response = await fetch("/.netlify/functions/contact", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestData),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(toRequest()),
     });
-
-    const result = await response.json();
+    const result = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(
-        result.error || `HTTP ${response.status}: ${response.statusText}`
+      showStatus(
+        "error",
+        result.error ??
+          "견적 문의 전송에 실패했습니다. 잠시 후 다시 시도해주세요."
       );
+      return;
     }
 
-    alert(
-      "견적 문의가 성공적으로 전송되었습니다!\n빠른 시일 내에 연락드리겠습니다."
+    showStatus(
+      "success",
+      "견적 문의가 접수되었습니다. 빠른 시일 내에 연락드리겠습니다."
     );
-
-    // 폼 초기화
-    Object.assign(formData, createEmptyForm());
-
-  } catch (error: any) {
-    console.error("이메일 전송 실패:", error);
-
-    let errorMessage = "견적 문의 전송에 실패했습니다.";
-
-    // 네트워크 에러 처리
-    if (error instanceof TypeError && error.message.includes("fetch")) {
-      errorMessage = "네트워크 연결을 확인해주세요.";
-    } else if (error.message) {
-      errorMessage = `전송 실패: ${error.message}`;
-    }
-
-    alert(errorMessage + "\n\n잠시 후 다시 시도해주세요.");
+    resetForm();
+  } catch (error) {
+    // fetch 자체가 실패한 경우 (네트워크 오류)
+    console.error("견적 문의 전송 실패:", error);
+    showStatus("error", "네트워크 연결을 확인한 뒤 잠시 후 다시 시도해주세요.");
   } finally {
     isSubmitting.value = false;
   }
 };
 
-const handleAddressSearch = () => {
-  // 카카오 주소 검색 API가 로드되었는지 확인
-  if (!window.daum || !window.daum.Postcode) {
-    alert(
-      "주소 검색 서비스를 불러올 수 없습니다. 페이지를 새로고침 후 다시 시도해주세요."
-    );
-    return;
-  }
-
-  new window.daum.Postcode({
-    oncomplete: function (data) {
-      // 우편번호와 주소 정보를 입력 필드에 자동 설정
-      formData.postalCode = data.zonecode;
-      formData.roadAddress = data.roadAddress;
-
-      // 상세주소 입력 필드에 포커스
-      setTimeout(() => {
-        const detailAddressInput = document.getElementById(
-          "detail-address"
-        ) as HTMLInputElement;
-        if (detailAddressInput) {
-          detailAddressInput.focus();
-        }
-      }, 100);
-    },
-    width: "100%",
-    height: "400px",
-  }).open();
+const preloadPostcode = () => {
+  loadPostcodeScript().catch(() => {
+    // 실패해도 클릭 시 다시 시도하므로 무시
+  });
 };
 
+const handleAddressSearch = async () => {
+  try {
+    await openPostcodeSearch((data) => {
+      formData.postalCode = data.zonecode;
+      formData.roadAddress = data.roadAddress;
+      // 상세주소 입력으로 포커스 이동
+      setTimeout(() => detailAddressRef.value?.focus(), 100);
+    });
+  } catch {
+    showStatus(
+      "error",
+      "주소 검색 서비스를 불러올 수 없습니다. 잠시 후 다시 시도해주세요."
+    );
+  }
+};
+
+// 폼이 화면에 들어오면 우편번호 스크립트를 미리 받아 둔다
+// (클릭 시 팝업을 동기적으로 열어야 모바일 팝업 차단을 피할 수 있음)
+let preloadObserver: IntersectionObserver | null = null;
+
+onMounted(() => {
+  if (!formCardRef.value || typeof IntersectionObserver === "undefined") return;
+  preloadObserver = new IntersectionObserver(([entry]) => {
+    if (!entry?.isIntersecting) return;
+    preloadPostcode();
+    preloadObserver?.disconnect();
+  });
+  preloadObserver.observe(formCardRef.value);
+});
+
+onUnmounted(() => preloadObserver?.disconnect());
 </script>

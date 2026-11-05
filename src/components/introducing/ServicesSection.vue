@@ -26,11 +26,12 @@
 </template>
 
 <script setup lang="ts">
+import type { Component } from "vue";
 import ServiceCard from "../ServiceCard.vue";
 
 interface Props {
   services: Array<{
-    icon: any;
+    icon: Component;
     title: string;
     description: string;
     items: string[];
@@ -38,6 +39,5 @@ interface Props {
 }
 
 defineProps<Props>();
-
 
 </script>
