@@ -83,12 +83,12 @@ const navItems = [...NAV_ITEMS];
 
 const features = COMPANY_FEATURES.map((feature) => ({
   ...feature,
-  icon: iconMap[feature.icon as keyof typeof iconMap],
+  icon: iconMap[feature.icon],
 }));
 
 const services = SERVICES.map((service) => ({
   ...service,
-  icon: iconMap[service.icon as keyof typeof iconMap],
+  icon: iconMap[service.icon],
   items: [...service.items],
 }));
 
@@ -102,7 +102,7 @@ const contacts = CONTACT_LIST.filter(
   (contact) => FEATURES.inquiryForm || contact.id !== "email"
 ).map((contact) => ({
   ...contact,
-  icon: iconMap[contact.icon as keyof typeof iconMap],
+  icon: iconMap[contact.icon],
 }));
 
 const form = ref({ ...INITIAL_FORM_DATA });

@@ -1,13 +1,14 @@
 <template>
   <dialog
     ref="dialogRef"
-    class="privacy-dialog w-[calc(100%-2rem)] max-w-2xl rounded-lg p-0 shadow-xl backdrop:bg-black/50"
-    aria-labelledby="privacy-dialog-title"
+    class="m-auto w-[calc(100%-2rem)] max-w-2xl rounded-lg p-0 shadow-xl backdrop:bg-black/50"
+    :aria-labelledby="titleId"
+    @mousedown="handleBackdropMousedown"
     @click="handleBackdropClick"
   >
     <div class="max-h-[80vh] overflow-y-auto p-6 text-left text-gray-700">
       <div class="mb-4 flex items-start justify-between gap-4">
-        <h2 id="privacy-dialog-title" class="text-xl font-bold text-gray-900">
+        <h2 :id="titleId" class="text-xl font-bold text-gray-900">
           개인정보처리방침
         </h2>
         <button
@@ -93,25 +94,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, useId } from "vue";
 import { X } from "lucide-vue-next";
 import { COMPANY_INFO, PRIVACY_POLICY } from "@/constants/company-info";
 
 const dialogRef = ref<HTMLDialogElement>();
+// 푸터·견적 폼에 인스턴스가 둘 있을 수 있으므로 id를 인스턴스마다 고유하게
+const titleId = useId();
 
 const open = () => dialogRef.value?.showModal();
 const close = () => dialogRef.value?.close();
 
-// dialog 바깥(backdrop) 클릭 시 닫기
+// dialog 바깥(backdrop) 클릭 시 닫기.
+// 본문에서 드래그를 시작해 backdrop에서 놓으면 click target이 dialog가 되므로
+// mousedown도 backdrop에서 시작했을 때만 닫는다.
+let pressedOnBackdrop = false;
+const handleBackdropMousedown = (event: MouseEvent) => {
+  pressedOnBackdrop = event.target === dialogRef.value;
+};
 const handleBackdropClick = (event: MouseEvent) => {
-  if (event.target === dialogRef.value) close();
+  if (pressedOnBackdrop && event.target === dialogRef.value) close();
+  pressedOnBackdrop = false;
 };
 
 defineExpose({ open, close });
 </script>
-
-<style scoped>
-.privacy-dialog {
-  margin: auto;
-}
-</style>
