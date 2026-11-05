@@ -23,6 +23,7 @@
                   v-model="formData.name"
                   id="name"
                   type="text"
+                  :maxlength="INQUIRY_LIMITS.name"
                   placeholder="성함을 입력해주세요"
                   required
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
@@ -94,17 +95,13 @@
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
                 >
                   <option value="">공사 구분을 선택해주세요</option>
-                  <option value="신축">신축 (새로운 건물 건설)</option>
-                  <option value="증축">증축 (기존 건물 확장)</option>
-                  <option value="외관리모델링">
-                    외관 리모델링 (외부 개보수)
+                  <option
+                    v-for="option in CONSTRUCTION_TYPES"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
                   </option>
-                  <option value="내부리모델링">내부 리모델링 (인테리어)</option>
-                  <option value="전체리모델링">
-                    전체 리모델링 (내외부 전면 개보수)
-                  </option>
-                  <option value="구조변경">구조 변경 및 보강</option>
-                  <option value="기타">기타 (상담 시 문의)</option>
                 </select>
               </div>
             </div>
@@ -122,11 +119,13 @@
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
                 >
                   <option value="">평형을 선택해주세요</option>
-                  <option value="10-20">10평 ~ 20평</option>
-                  <option value="20-30">20평 ~ 30평</option>
-                  <option value="30-40">30평 ~ 40평</option>
-                  <option value="40-50">40평 ~ 50평</option>
-                  <option value="50+">50평 이상</option>
+                  <option
+                    v-for="option in AREA_OPTIONS"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </option>
                 </select>
               </div>
               <div>
@@ -141,12 +140,13 @@
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
                 >
                   <option value="">예상 금액대를 선택해주세요</option>
-                  <option value="1000-3000">1,000만원 ~ 3,000만원</option>
-                  <option value="3000-5000">3,000만원 ~ 5,000만원</option>
-                  <option value="5000-1억">5,000만원 ~ 1억원</option>
-                  <option value="1억-5억">1억원 ~ 5억원</option>
-                  <option value="5억-10억">5억원 ~ 10억원</option>
-                  <option value="10억+">10억원 이상</option>
+                  <option
+                    v-for="option in BUDGET_OPTIONS"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </option>
                 </select>
               </div>
             </div>
@@ -199,10 +199,24 @@
               <textarea
                 v-model="formData.message"
                 id="message"
+                :maxlength="INQUIRY_LIMITS.message"
                 placeholder="프로젝트에 대한 상세한 내용을 알려주세요"
                 rows="5"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
               ></textarea>
+            </div>
+
+            <!-- 스팸 방지용 honeypot: 사람에게는 보이지 않고, 봇만 채우는 필드 -->
+            <div class="hidden" aria-hidden="true">
+              <label for="company-website">회사 웹사이트</label>
+              <input
+                v-model="honeypot"
+                id="company-website"
+                type="text"
+                name="company_website"
+                tabindex="-1"
+                autocomplete="off"
+              />
             </div>
 
             <div class="text-center">
@@ -239,6 +253,13 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import ContactInfo from "./ContactInfo.vue";
+import {
+  AREA_OPTIONS,
+  BUDGET_OPTIONS,
+  CONSTRUCTION_TYPES,
+  INQUIRY_LIMITS,
+  type InquiryRequest,
+} from "@/shared/inquiry";
 
 // 카카오 주소 검색 API 타입 정의
 declare global {
@@ -295,6 +316,10 @@ const emit = defineEmits<Emits>();
 const formData = ref({ ...props.form });
 const isSubmitting = ref(false);
 
+// 스팸 방지: honeypot 값과 폼이 화면에 뜬 시각
+const honeypot = ref("");
+const formShownAt = ref(Date.now());
+
 // Refs for animation elements
 const titleRef = ref<HTMLElement>();
 const formRef = ref<HTMLElement>();
@@ -350,30 +375,21 @@ const handleSubmit = async () => {
   isSubmitting.value = true;
 
   try {
-    // 서버리스 함수로 전송할 데이터 준비
-    const requestData = {
+    // 기본값("미정" 등) 채우기와 접수 시각 기록은 서버에서 처리
+    const requestData: InquiryRequest = {
       customer_name: formData.value.name,
       customer_phone: formData.value.phone,
       customer_email: formData.value.email,
-      construction_date: formData.value.constructionDate || "미정",
       construction_type: formData.value.constructionType,
-      area: formData.value.area || "미정",
-      budget: formData.value.budget || "미정",
-      postal_code: formData.value.postalCode || "",
-      road_address: formData.value.roadAddress || "",
-      detail_address: formData.value.detailAddress || "",
-      full_address:
-        `${formData.value.postalCode ? `(${formData.value.postalCode}) ` : ""}${
-          formData.value.roadAddress || ""
-        } ${formData.value.detailAddress || ""}`.trim() || "미입력",
-      message: formData.value.message || "특별한 요청사항 없음",
-      inquiry_date: new Date().toLocaleDateString("ko-KR", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      construction_date: formData.value.constructionDate,
+      area: formData.value.area,
+      budget: formData.value.budget,
+      postal_code: formData.value.postalCode,
+      road_address: formData.value.roadAddress,
+      detail_address: formData.value.detailAddress,
+      message: formData.value.message,
+      company_website: honeypot.value,
+      elapsed_ms: Date.now() - formShownAt.value,
     };
 
     // 서버리스 함수로 이메일 전송 요청
@@ -385,12 +401,13 @@ const handleSubmit = async () => {
       body: JSON.stringify(requestData),
     });
 
-    const result = await response.json();
+    const result = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(
-        result.error || `HTTP ${response.status}: ${response.statusText}`
+      alert(
+        result.error ?? "견적 문의 전송에 실패했습니다. 잠시 후 다시 시도해주세요."
       );
+      return;
     }
 
     alert(
@@ -411,6 +428,7 @@ const handleSubmit = async () => {
       budget: "",
       message: "",
     };
+    formShownAt.value = Date.now();
 
     emit("submit-form");
   } catch (error: any) {
