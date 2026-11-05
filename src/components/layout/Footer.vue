@@ -74,7 +74,8 @@
           >
             개인정보처리방침
           </button>
-          <p>
+          <!-- 연도는 빌드 시 프리렌더되므로 해가 바뀐 뒤 하이드레이션하면 달라질 수 있다 (클라이언트 값으로 갱신) -->
+          <p data-allow-mismatch="text">
             &copy; {{ new Date().getFullYear() }} {{ COMPANY_INFO.name }}. All
             rights reserved.
           </p>

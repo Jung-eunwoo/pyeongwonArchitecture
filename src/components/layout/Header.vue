@@ -116,7 +116,8 @@ const handleKeydown = (event: KeyboardEvent) => {
 };
 
 // md 이상으로 화면이 커지면 모바일 메뉴 상태 초기화
-const desktopQuery = window.matchMedia("(min-width: 768px)");
+// 빌드 시 프리렌더(서버)에는 window가 없으므로 마운트 후에 만든다
+let desktopQuery: MediaQueryList | null = null;
 const handleViewportChange = (event: MediaQueryListEvent) => {
   if (event.matches) isMenuOpen.value = false;
 };
@@ -127,11 +128,12 @@ watch(isMenuOpen, (open) => {
 });
 
 onMounted(() => {
+  desktopQuery = window.matchMedia("(min-width: 768px)");
   desktopQuery.addEventListener("change", handleViewportChange);
 });
 
 onUnmounted(() => {
-  desktopQuery.removeEventListener("change", handleViewportChange);
+  desktopQuery?.removeEventListener("change", handleViewportChange);
   document.removeEventListener("keydown", handleKeydown);
 });
 </script>
