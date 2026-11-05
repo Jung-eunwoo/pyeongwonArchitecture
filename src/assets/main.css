@@ -13,6 +13,8 @@
 /* 디자인 토큰: text-brand, bg-brand, ring-brand, accent-brand 등으로 사용 */
 @theme {
   --color-brand: #d52e38;
+  /* hover용 진한 브랜드색 (흰 글자 대비 유지: opacity로 흐리게 하면 4.5:1 미만) */
+  --color-brand-dark: #b8252e;
   --font-sans: "Pretendard Subset", "Pretendard Variable", "Pretendard", -apple-system,
     BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR",
     "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
