@@ -5,8 +5,8 @@
   # 빌드 결과물이 생성되는 디렉토리
   publish = "dist"
   
-  # Node.js LTS 20 적용 (안정성 확보)
-  environment = { NODE_VERSION = "20.11.1" }
+  # Node.js 22 LTS (Vite 7은 Node 20.19+ 필요). 로컬/CI는 .nvmrc와 맞춤
+  environment = { NODE_VERSION = "22" }
 
 # SPA(Single Page Application) 라우팅을 위한 리다이렉트 설정
 [[redirects]]
