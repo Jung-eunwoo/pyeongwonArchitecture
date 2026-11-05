@@ -1,23 +1,33 @@
 <template>
-  <div class="flex flex-col items-center">
+  <component
+    :is="href ? 'a' : 'div'"
+    :href="href"
+    :target="isExternal ? '_blank' : undefined"
+    :rel="isExternal ? 'noopener noreferrer' : undefined"
+    class="flex flex-col items-center rounded-lg p-2"
+    :class="{ 'transition-colors hover:bg-white': href }"
+  >
     <component :is="icon" class="h-8 w-8 mb-3" style="color: #d52e38" />
     <h3 class="font-semibold text-gray-900 mb-2">{{ title }}</h3>
-    <p class="text-gray-600">{{ content }}</p>
+    <p class="text-gray-600" :class="{ 'underline-offset-4 hover:underline': href }">
+      {{ content }}
+    </p>
     <p v-if="subtitle" class="text-sm text-gray-500">{{ subtitle }}</p>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+
 interface Props {
   icon: any;
   title: string;
   content: string;
   subtitle?: string;
+  href?: string;
 }
 
-defineProps<Props>();
-</script>
+const props = defineProps<Props>();
 
-<style scoped>
-/* 추가적인 스타일링이 필요한 경우 여기에 작성 */
-</style>
+const isExternal = computed(() => !!props.href?.startsWith("http"));
+</script>

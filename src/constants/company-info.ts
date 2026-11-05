@@ -7,11 +7,9 @@ export const COMPANY_INFO = {
   // 연락처 정보
   phone: "032-205-5707",
   fax: "032-205-5708",
-  mobile: "010-1234-5678",
 
   // 이메일
   email: "pw83437@naver.com",
-  supportEmail: "support@pyeongwon.co.kr",
 
   // 주소 정보
   address: {
@@ -31,25 +29,24 @@ export const COMPANY_INFO = {
   // 사업자 정보
   business: {
     registrationNumber: "130-44-83437",
-    representative: "김평원",
-    establishedYear: 1994,
-    experience: 40,
   },
 
-  // 실적
+  // 실적 (화면의 "N년 경험" 문구는 모두 experienceYears 하나만 참조)
   performance: {
     completedProjects: 500,
     experienceYears: 40,
   },
 
-  // 웹사이트 및 소셜미디어
-  website: "https://www.pyeongwon.co.kr",
-  social: {
-    facebook: "",
-    instagram: "",
-    youtube: "",
-    blog: "",
-  },
+  website: "https://pyeongwon-architecture.netlify.app",
+} as const;
+
+// 링크용 값 (tel:, mailto:, 지도)
+export const CONTACT_LINKS = {
+  tel: `tel:${COMPANY_INFO.phone.replace(/-/g, "")}`,
+  mailto: `mailto:${COMPANY_INFO.email}`,
+  map: `https://map.naver.com/p/search/${encodeURIComponent(
+    COMPANY_INFO.address.roadAddress
+  )}`,
 } as const;
 
 // 연락처 정보만 별도로 export
@@ -199,18 +196,21 @@ export const CONTACT_LIST = [
     title: "전화 문의",
     content: COMPANY_INFO.phone,
     subtitle: COMPANY_INFO.businessHours.weekday,
+    href: CONTACT_LINKS.tel,
   },
   {
     icon: "Mail",
     title: "이메일 문의",
     content: COMPANY_INFO.email,
     subtitle: "24시간 접수 가능",
+    href: CONTACT_LINKS.mailto,
   },
   {
     icon: "MapPin",
     title: "오시는 길",
     content: COMPANY_INFO.address.roadAddress,
     subtitle: COMPANY_INFO.address.detailAddress,
+    href: CONTACT_LINKS.map,
   },
 ] as const;
 
