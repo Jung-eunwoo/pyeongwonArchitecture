@@ -6,9 +6,10 @@ on:
     branches: ["master"]
   pull_request:
 
+# PR은 새 push가 오면 이전 실행을 취소하고, master는 커밋마다 끝까지 빌드한다
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -20,6 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # .nvmrc는 Netlify 운영 빌드(netlify.toml의 NODE_VERSION)와 같은 버전으로 유지
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:

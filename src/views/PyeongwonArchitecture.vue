@@ -99,7 +99,7 @@ const portfolio = PORTFOLIO_PROJECTS.map((project) => ({
 
 // 폼 문의를 받지 않는 동안에는 "이메일 문의" 카드도 숨김
 const contacts = CONTACT_LIST.filter(
-  (contact) => FEATURES.inquiryForm || contact.icon !== "Mail"
+  (contact) => FEATURES.inquiryForm || contact.id !== "email"
 ).map((contact) => ({
   ...contact,
   icon: iconMap[contact.icon as keyof typeof iconMap],
