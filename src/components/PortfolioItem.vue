@@ -284,9 +284,8 @@ const handleFocusOut = (event: FocusEvent) => {
   const next = event.relatedTarget as Node | null;
   if (!next || !cardRef.value?.contains(next)) isFocused.value = false;
 };
-const prefersReducedMotion = window.matchMedia(
-  "(prefers-reduced-motion: reduce)"
-).matches;
+// 빌드 시 프리렌더(서버)에는 window가 없으므로 마운트 후에 확인한다
+const prefersReducedMotion = ref(false);
 
 const shouldAutoSlide = computed(
   () =>
@@ -295,7 +294,7 @@ const shouldAutoSlide = computed(
     !isHovered.value &&
     !isFocused.value &&
     !isUserPaused.value &&
-    !prefersReducedMotion
+    !prefersReducedMotion.value
 );
 
 const startAutoSlide = () => {
@@ -317,6 +316,10 @@ watch(shouldAutoSlide, (enabled) =>
 let observer: IntersectionObserver | null = null;
 
 onMounted(() => {
+  prefersReducedMotion.value = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
   // IntersectionObserver 미지원 환경에서는 바로 보이는 것으로 처리
   if (!cardRef.value || typeof IntersectionObserver === "undefined") {
     isInView.value = true;
