@@ -10,31 +10,7 @@
         <ContactForm v-if="FEATURES.inquiryForm" />
 
         <!-- 폼 비활성화 시: 전화 문의 안내 -->
-        <div
-          v-else
-          class="bg-white rounded-lg shadow-md px-6 py-10 mb-12 text-center fade-in-up-delay"
-          v-reveal
-        >
-          <Phone class="mx-auto mb-4 h-12 w-12 text-brand" />
-          <p class="mb-2 text-lg font-semibold text-gray-900">
-            견적 문의는 전화로 받고 있습니다
-          </p>
-          <p class="mb-6 text-gray-600">
-            공사 내용을 말씀해 주시면 상담 후 견적을 안내해 드립니다.
-          </p>
-          <a
-            :href="CONTACT_LINKS.tel"
-            class="inline-flex items-center gap-2 rounded-lg bg-brand px-8 py-3 text-lg font-bold text-white transition-opacity hover:opacity-90"
-          >
-            <Phone class="h-5 w-5" />
-            {{ COMPANY_INFO.phone }}
-          </a>
-          <p class="mt-4 text-sm text-gray-500">
-            {{ COMPANY_INFO.businessHours.weekday }} ·
-            {{ COMPANY_INFO.businessHours.saturday }} ·
-            {{ COMPANY_INFO.businessHours.sunday }}
-          </p>
-        </div>
+        <PhoneInquiryCard v-else />
 
         <div
           class="grid gap-8 text-center stagger-animation"
@@ -58,13 +34,17 @@
 
 <script setup lang="ts">
 import { defineAsyncComponent, type Component } from "vue";
-import { Phone } from "lucide-vue-next";
 import ContactInfo from "./ContactInfo.vue";
-import { COMPANY_INFO, CONTACT_LINKS } from "@/constants/company-info";
+import PhoneInquiryCard from "./PhoneInquiryCard.vue";
 import { FEATURES } from "@/constants/features";
 
-// 폼은 꺼져 있는 동안 번들에 포함되지 않도록 별도 청크로 분리
-const ContactForm = defineAsyncComponent(() => import("./ContactForm.vue"));
+// 폼은 꺼져 있는 동안 번들에 포함되지 않도록 별도 청크로 분리.
+// 청크를 못 받으면(재배포 후 오래된 탭, 네트워크 오류) 전화 안내로 대신 보여 준다.
+const ContactForm = defineAsyncComponent({
+  loader: () => import("./ContactForm.vue"),
+  errorComponent: PhoneInquiryCard,
+  timeout: 10000,
+});
 
 defineProps<{
   contacts: Array<{

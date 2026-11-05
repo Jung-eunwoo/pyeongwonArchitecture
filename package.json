@@ -8,12 +8,11 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "npm run font:subset && run-p type-check \"build-only {@}\" --",
+    "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
-    "font:subset": "node scripts/subset-font.mjs",
-    "predev": "npm run font:subset"
+    "font:subset": "node scripts/subset-font.mjs"
   },
   "dependencies": {
     "@emailjs/nodejs": "^5.0.2",
