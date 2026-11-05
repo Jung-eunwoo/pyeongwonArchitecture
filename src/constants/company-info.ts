@@ -52,16 +52,6 @@ export const COMPANY_INFO = {
   },
 } as const;
 
-// 연락처 정보만 별도로 export
-export const CONTACT_INFO = {
-  phone: COMPANY_INFO.phone,
-  email: COMPANY_INFO.email,
-  address: COMPANY_INFO.address.fullAddress,
-} as const;
-
-// 비즈니스 아워
-export const BUSINESS_HOURS = COMPANY_INFO.businessHours;
-
 // 회사 실적
 export const COMPANY_STATS = COMPANY_INFO.performance;
 

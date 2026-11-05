@@ -41,5 +41,3 @@ const scrollToSection = (sectionId: string) => {
   emit("scroll-to", sectionId);
 };
 </script>
-
-<style scoped></style>

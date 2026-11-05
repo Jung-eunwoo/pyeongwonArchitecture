@@ -55,9 +55,5 @@
 </template>
 
 <script setup lang="ts">
-import { CONTACT_INFO, COMPANY_INFO, SERVICES } from "@/constants/company-info";
-
-// Footer component script
+import { COMPANY_INFO, SERVICES } from "@/constants/company-info";
 </script>
-
-<style scoped></style>

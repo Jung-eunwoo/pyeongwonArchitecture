@@ -2,14 +2,14 @@
   <section id="contact" class="py-20 bg-gray-50">
     <div class="container mx-auto px-4">
       <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-16 fade-in-up" ref="titleRef">
+        <div class="text-center mb-16 fade-in-up" v-reveal>
           <h2 class="text-4xl font-bold text-gray-900 mb-4">견적 문의</h2>
           <p class="text-lg text-gray-600">무료 상담 및 견적을 받아보세요</p>
         </div>
 
         <div
           class="bg-white rounded-lg shadow-md p-8 mb-12 fade-in-up-delay"
-          ref="formRef"
+          v-reveal
         >
           <form @submit.prevent="handleSubmit" class="space-y-6">
             <div class="grid md:grid-cols-2 gap-6">
@@ -25,7 +25,7 @@
                   type="text"
                   placeholder="성함을 입력해주세요"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                 />
               </div>
               <div>
@@ -40,7 +40,7 @@
                   type="tel"
                   placeholder="010-0000-0000"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                 />
                 <p class="text-sm text-gray-500">
                   ※실제 연락을 받을 수 있는 번호를 입력해주세요.
@@ -60,7 +60,7 @@
                 type="email"
                 placeholder="example@email.com"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
               />
               <p class="text-sm text-gray-500">
                 ※실제 연락을 받을 수 있는 이메일을 입력해주세요.
@@ -78,7 +78,7 @@
                   v-model="formData.constructionDate"
                   id="construction-date"
                   type="date"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                 />
               </div>
               <div>
@@ -91,7 +91,7 @@
                   v-model="formData.constructionType"
                   id="construction-type"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                 >
                   <option value="">공사 구분을 선택해주세요</option>
                   <option value="신축">신축 (새로운 건물 건설)</option>
@@ -119,7 +119,7 @@
                 <select
                   v-model="formData.area"
                   id="area"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                 >
                   <option value="">평형을 선택해주세요</option>
                   <option value="10-20">10평 ~ 20평</option>
@@ -138,7 +138,7 @@
                 <select
                   v-model="formData.budget"
                   id="budget"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                 >
                   <option value="">예상 금액대를 선택해주세요</option>
                   <option value="1000-3000">1,000만원 ~ 3,000만원</option>
@@ -164,12 +164,12 @@
                     id="postal-code"
                     placeholder="우편번호"
                     readonly
-                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent bg-gray-50"
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent bg-gray-50"
                   />
                   <button
                     type="button"
                     @click="handleAddressSearch"
-                    class="px-4 py-2 bg-[#d52e38] text-white rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
+                    class="px-4 py-2 bg-brand text-white rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
                   >
                     검색
                   </button>
@@ -179,13 +179,13 @@
                   id="road-address"
                   placeholder="도로명 주소"
                   readonly
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent bg-gray-50"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent bg-gray-50"
                 />
                 <input
                   v-model="formData.detailAddress"
                   id="detail-address"
                   placeholder="상세 주소"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                 />
               </div>
             </div>
@@ -201,7 +201,7 @@
                 id="message"
                 placeholder="프로젝트에 대한 상세한 내용을 알려주세요"
                 rows="5"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
               ></textarea>
             </div>
 
@@ -209,7 +209,7 @@
               <button
                 type="submit"
                 :disabled="isSubmitting"
-                class="bg-[#d52e38] text-white px-12 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                class="bg-brand text-white px-12 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span v-if="isSubmitting">전송 중...</span>
                 <span v-else>견적 문의하기</span>
@@ -220,7 +220,7 @@
 
         <div
           class="grid md:grid-cols-3 gap-8 text-center stagger-animation"
-          ref="contactsRef"
+          v-reveal
         >
           <ContactInfo
             v-for="contact in contacts"
@@ -237,8 +237,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from "vue";
+import { ref, reactive } from "vue";
 import ContactInfo from "./ContactInfo.vue";
+import { INITIAL_FORM_DATA } from "@/constants/company-info";
 
 // 카카오 주소 검색 API 타입 정의
 declare global {
@@ -269,79 +270,23 @@ interface Props {
     content: string;
     subtitle?: string;
   }>;
-  form: {
-    name: string;
-    phone: string;
-    email: string;
-    constructionDate: string;
-    constructionType: string;
-    area: string;
-    postalCode: string;
-    roadAddress: string;
-    detailAddress: string;
-    budget: string;
-    message: string;
-  };
 }
 
-interface Emits {
-  (e: "submit-form"): void;
-  (e: "address-search"): void;
-}
+defineProps<Props>();
 
-const props = defineProps<Props>();
-const emit = defineEmits<Emits>();
-
-const formData = ref({ ...props.form });
+// 폼 상태는 이 컴포넌트가 소유한다
+type InquiryFormData = { -readonly [K in keyof typeof INITIAL_FORM_DATA]: string };
+const createEmptyForm = (): InquiryFormData => ({ ...INITIAL_FORM_DATA });
+const formData = reactive(createEmptyForm());
 const isSubmitting = ref(false);
-
-// Refs for animation elements
-const titleRef = ref<HTMLElement>();
-const formRef = ref<HTMLElement>();
-const contactsRef = ref<HTMLElement>();
-
-let observer: IntersectionObserver;
-
-const setupIntersectionObserver = () => {
-  const options = {
-    threshold: 0.1,
-    rootMargin: "0px 0px -50px 0px",
-  };
-
-  observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
-      }
-    });
-  }, options);
-
-  // Observe all animation elements
-  const elementsToObserve = [titleRef.value, formRef.value, contactsRef.value];
-
-  elementsToObserve.forEach((element) => {
-    if (element) {
-      observer.observe(element);
-    }
-  });
-};
-
-// Watch for form changes and sync with parent
-watch(
-  () => props.form,
-  (newForm) => {
-    formData.value = { ...newForm };
-  },
-  { deep: true }
-);
 
 const handleSubmit = async () => {
   // 필수 필드 검증
   if (
-    !formData.value.name ||
-    !formData.value.phone ||
-    !formData.value.email ||
-    !formData.value.constructionType
+    !formData.name ||
+    !formData.phone ||
+    !formData.email ||
+    !formData.constructionType
   ) {
     alert("필수 항목을 모두 입력해주세요.");
     return;
@@ -352,21 +297,21 @@ const handleSubmit = async () => {
   try {
     // 서버리스 함수로 전송할 데이터 준비
     const requestData = {
-      customer_name: formData.value.name,
-      customer_phone: formData.value.phone,
-      customer_email: formData.value.email,
-      construction_date: formData.value.constructionDate || "미정",
-      construction_type: formData.value.constructionType,
-      area: formData.value.area || "미정",
-      budget: formData.value.budget || "미정",
-      postal_code: formData.value.postalCode || "",
-      road_address: formData.value.roadAddress || "",
-      detail_address: formData.value.detailAddress || "",
+      customer_name: formData.name,
+      customer_phone: formData.phone,
+      customer_email: formData.email,
+      construction_date: formData.constructionDate || "미정",
+      construction_type: formData.constructionType,
+      area: formData.area || "미정",
+      budget: formData.budget || "미정",
+      postal_code: formData.postalCode || "",
+      road_address: formData.roadAddress || "",
+      detail_address: formData.detailAddress || "",
       full_address:
-        `${formData.value.postalCode ? `(${formData.value.postalCode}) ` : ""}${
-          formData.value.roadAddress || ""
-        } ${formData.value.detailAddress || ""}`.trim() || "미입력",
-      message: formData.value.message || "특별한 요청사항 없음",
+        `${formData.postalCode ? `(${formData.postalCode}) ` : ""}${
+          formData.roadAddress || ""
+        } ${formData.detailAddress || ""}`.trim() || "미입력",
+      message: formData.message || "특별한 요청사항 없음",
       inquiry_date: new Date().toLocaleDateString("ko-KR", {
         year: "numeric",
         month: "long",
@@ -398,21 +343,8 @@ const handleSubmit = async () => {
     );
 
     // 폼 초기화
-    formData.value = {
-      name: "",
-      phone: "",
-      email: "",
-      constructionDate: "",
-      constructionType: "",
-      area: "",
-      postalCode: "",
-      roadAddress: "",
-      detailAddress: "",
-      budget: "",
-      message: "",
-    };
+    Object.assign(formData, createEmptyForm());
 
-    emit("submit-form");
   } catch (error: any) {
     console.error("이메일 전송 실패:", error);
 
@@ -443,8 +375,8 @@ const handleAddressSearch = () => {
   new window.daum.Postcode({
     oncomplete: function (data) {
       // 우편번호와 주소 정보를 입력 필드에 자동 설정
-      formData.value.postalCode = data.zonecode;
-      formData.value.roadAddress = data.roadAddress;
+      formData.postalCode = data.zonecode;
+      formData.roadAddress = data.roadAddress;
 
       // 상세주소 입력 필드에 포커스
       setTimeout(() => {
@@ -461,17 +393,4 @@ const handleAddressSearch = () => {
   }).open();
 };
 
-onMounted(() => {
-  setupIntersectionObserver();
-});
-
-onUnmounted(() => {
-  if (observer) {
-    observer.disconnect();
-  }
-});
 </script>
-
-<style scoped>
-/* 추가적인 스타일링이 필요한 경우 여기에 작성 */
-</style>

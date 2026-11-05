@@ -96,8 +96,7 @@
       <!-- 타입 라벨 -->
       <div class="absolute top-4 left-4">
         <span
-          class="px-3 py-1 text-xs font-medium text-white rounded-full"
-          style="background-color: #d52e38"
+          class="px-3 py-1 text-xs font-medium text-white rounded-full bg-brand"
         >
           {{ type }}
         </span>
@@ -176,7 +175,3 @@ onUnmounted(() => {
   stopAutoSlide();
 });
 </script>
-
-<style scoped>
-/* 추가적인 스타일링이 필요한 경우 여기에 작성 */
-</style>

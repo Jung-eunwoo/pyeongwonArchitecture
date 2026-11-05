@@ -9,7 +9,7 @@
         <h1
           class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 animate-slide-up"
         >
-          꿈의 공간을 <span :style="{ color: '#d52e38' }">현실로</span>
+          꿈의 공간을 <span class="text-brand">현실로</span>
         </h1>
         <p
           class="text-xl text-gray-600 mb-8 leading-relaxed animate-slide-up-delay-1"
@@ -24,8 +24,7 @@
         >
           <button
             @click="scrollToSection('contact')"
-            class="px-8 py-3 text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
-            :style="{ backgroundColor: '#d52e38' }"
+            class="px-8 py-3 text-white font-medium rounded-lg hover:opacity-90 transition-opacity bg-brand"
           >
             무료 견적 받기
           </button>
@@ -52,5 +51,3 @@ const scrollToSection = (sectionId: string) => {
   emit("scroll-to", sectionId);
 };
 </script>
-
-<style scoped></style>
