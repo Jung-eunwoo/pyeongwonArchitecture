@@ -174,10 +174,10 @@
               @click="handleAddressSearch"
               @pointerenter="preloadPostcode"
               @focus="preloadPostcode"
+              aria-label="주소 검색"
               class="px-4 py-2 bg-brand text-white rounded-md border border-transparent hover:bg-brand-dark transition-colors whitespace-nowrap"
             >
-              <span aria-hidden="true">검색</span>
-              <span class="sr-only">주소 검색</span>
+              검색
             </button>
           </div>
           <input

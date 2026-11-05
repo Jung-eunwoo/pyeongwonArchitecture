@@ -4,7 +4,7 @@
     class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow group"
     @pointerenter="handlePointerEnter"
     @pointerleave="isHovered = false"
-    @focusin="isFocused = true"
+    @focusin="handleFocusIn"
     @focusout="handleFocusOut"
   >
     <div class="relative">
@@ -123,7 +123,6 @@
           @click="isUserPaused = !isUserPaused"
           class="absolute bottom-2 right-2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
           :aria-label="isUserPaused ? `${title} 사진 자동 넘김 재생` : `${title} 사진 자동 넘김 정지`"
-          :aria-pressed="isUserPaused ? 'true' : 'false'"
         >
           <Play v-if="isUserPaused" class="h-3.5 w-3.5" />
           <Pause v-else class="h-3.5 w-3.5" />
@@ -267,6 +266,13 @@ const handlePointerEnter = (event: PointerEvent) => {
 };
 
 // 카드 내부 요소 사이의 포커스 이동은 정지 상태를 유지
+// 키보드로 들어온 포커스(:focus-visible)일 때만 멈춘다.
+// 마우스·터치로 버튼을 누르면 포커스가 버튼에 남는데, 이때까지 멈추면 '재생'을 눌러도 다시 돌지 않는다.
+const handleFocusIn = (event: FocusEvent) => {
+  const target = event.target as HTMLElement;
+  isFocused.value = target.matches(":focus-visible");
+};
+
 const handleFocusOut = (event: FocusEvent) => {
   const next = event.relatedTarget as Node | null;
   if (!next || !cardRef.value?.contains(next)) isFocused.value = false;

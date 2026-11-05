@@ -64,9 +64,11 @@
         <li v-for="item in navItems" :key="item.id">
           <button
             type="button"
-            class="block w-full py-3 text-left text-base font-medium"
+            class="block w-full py-3 text-left text-base font-medium underline-offset-8"
             :class="
-              activeSection === item.id ? 'text-brand' : 'text-gray-700'
+              activeSection === item.id
+                ? 'text-brand underline decoration-2'
+                : 'text-gray-700'
             "
             :aria-current="activeSection === item.id ? 'true' : undefined"
             @click="scrollToSection(item.id)"

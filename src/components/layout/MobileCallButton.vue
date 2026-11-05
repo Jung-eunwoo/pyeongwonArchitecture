@@ -1,7 +1,7 @@
 <template>
   <!-- 모바일 전용 하단 고정 전화 상담 버튼.
        견적 문의 섹션(전화 안내 카드가 있는 곳)이 보이는 동안에는 숨겨 버튼이 겹쳐 보이지 않게 한다. -->
-  <aside aria-label="전화 상담">
+  <aside aria-label="전화 상담" class="md:hidden">
     <Transition
       enter-from-class="translate-y-24 opacity-0"
       leave-to-class="translate-y-24 opacity-0"
