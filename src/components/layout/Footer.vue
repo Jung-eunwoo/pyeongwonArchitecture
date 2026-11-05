@@ -7,12 +7,12 @@
           <div class="md:col-span-2">
             <div class="flex items-center space-x-3 mb-4">
               <img
-            src="/logo.png"
-            alt="평원건축 로고"
-            width="40"
-            height="40"
-            class="h-10 w-auto"
-          />
+                src="/logo.png"
+                alt="평원건축 로고"
+                width="40"
+                height="40"
+                class="h-10 w-auto"
+              />
               <span class="text-2xl font-bold">{{ COMPANY_INFO.name }}</span>
             </div>
             <p class="text-gray-400 mb-4">

@@ -2,10 +2,10 @@
   <div
     ref="cardRef"
     class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow group"
-    @mouseenter="isPaused = true"
-    @mouseleave="isPaused = false"
-    @focusin="isPaused = true"
-    @focusout="isPaused = false"
+    @pointerenter="handlePointerEnter"
+    @pointerleave="isHovered = false"
+    @focusin="isFocused = true"
+    @focusout="handleFocusOut"
   >
     <div class="relative">
       <!-- 이미지 슬라이드 영역 -->
@@ -227,7 +227,20 @@ const AUTO_SLIDE_MS = 4000;
 const cardRef = ref<HTMLElement>();
 const isInView = ref(false);
 const hasEnteredView = ref(false);
-const isPaused = ref(false);
+// 호버와 포커스는 따로 추적한다 (한쪽이 풀려도 다른 쪽이 남아 있으면 계속 멈춤)
+const isHovered = ref(false);
+const isFocused = ref(false);
+
+// 터치 탭은 호환 mouseenter만 발생하고 mouseleave가 오지 않아 영구 정지되므로 마우스만 처리
+const handlePointerEnter = (event: PointerEvent) => {
+  if (event.pointerType === "mouse") isHovered.value = true;
+};
+
+// 카드 내부 요소 사이의 포커스 이동은 정지 상태를 유지
+const handleFocusOut = (event: FocusEvent) => {
+  const next = event.relatedTarget as Node | null;
+  if (!next || !cardRef.value?.contains(next)) isFocused.value = false;
+};
 const prefersReducedMotion = window.matchMedia(
   "(prefers-reduced-motion: reduce)"
 ).matches;
@@ -236,7 +249,8 @@ const shouldAutoSlide = computed(
   () =>
     props.images.length > 1 &&
     isInView.value &&
-    !isPaused.value &&
+    !isHovered.value &&
+    !isFocused.value &&
     !prefersReducedMotion
 );
 
@@ -257,7 +271,12 @@ watch(shouldAutoSlide, (enabled) => (enabled ? startAutoSlide() : stopAutoSlide(
 let observer: IntersectionObserver | null = null;
 
 onMounted(() => {
-  if (!cardRef.value) return;
+  // IntersectionObserver 미지원 환경에서는 바로 보이는 것으로 처리
+  if (!cardRef.value || typeof IntersectionObserver === "undefined") {
+    isInView.value = true;
+    hasEnteredView.value = true;
+    return;
+  }
   observer = new IntersectionObserver(
     ([entry]) => {
       isInView.value = !!entry?.isIntersecting;
