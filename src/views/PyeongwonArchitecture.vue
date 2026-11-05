@@ -33,7 +33,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, type Component } from "vue";
+import {
+  Award,
+  Building2,
+  Calculator,
+  Hammer,
+  Home,
+  Mail,
+  MapPin,
+  Phone,
+  Users,
+} from "lucide-vue-next";
 import HeroSection from "../components/introducing/HeroSection.vue";
 import AboutSection from "../components/introducing/AboutSection.vue";
 import ServicesSection from "../components/introducing/ServicesSection.vue";
@@ -51,20 +62,9 @@ import {
   INITIAL_FORM_DATA,
 } from "../constants/company-info";
 
-// Simple icon placeholders
-const Phone = "phone";
-const Mail = "mail";
-const MapPin = "map-pin";
-const Calculator = "calculator";
-const Users = "users";
-const Award = "award";
-const Hammer = "hammer";
-const Home = "home";
-const Building2 = "building2";
-
 const activeSection = ref("home");
 
-// 아이콘 매핑 객체
+// 상수의 아이콘 이름 → lucide 아이콘 컴포넌트
 const iconMap = {
   Award,
   Users,
@@ -75,7 +75,7 @@ const iconMap = {
   Phone,
   Mail,
   MapPin,
-};
+} satisfies Record<string, Component>;
 
 // 상수에서 가져온 데이터에 실제 아이콘 컴포넌트 매핑
 const navItems = [...NAV_ITEMS];

@@ -205,6 +205,37 @@
               ></textarea>
             </div>
 
+            <!-- 개인정보 수집·이용 동의 (필수) -->
+            <div class="rounded-md border border-gray-200 bg-gray-50 p-4">
+              <p class="mb-3 text-sm text-gray-600">
+                수집 항목: {{ PRIVACY_POLICY.items.required.join(", ") }} (필수)
+                · 이용 목적: {{ PRIVACY_POLICY.purpose }} · 보유 기간:
+                {{ PRIVACY_POLICY.retention }}
+              </p>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <label
+                  for="privacy-agreed"
+                  class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-800"
+                >
+                  <input
+                    v-model="privacyAgreed"
+                    id="privacy-agreed"
+                    type="checkbox"
+                    required
+                    class="h-4 w-4 accent-[#d52e38]"
+                  />
+                  개인정보 수집·이용에 동의합니다. (필수)
+                </label>
+                <button
+                  type="button"
+                  class="text-sm text-gray-500 underline hover:text-gray-700"
+                  @click="privacyDialogRef?.open()"
+                >
+                  전문 보기
+                </button>
+              </div>
+            </div>
+
             <div class="text-center">
               <button
                 type="submit"
@@ -217,6 +248,8 @@
             </div>
           </form>
         </div>
+
+        <PrivacyPolicyDialog ref="privacyDialogRef" />
 
         <div
           class="grid md:grid-cols-3 gap-8 text-center stagger-animation"
@@ -237,8 +270,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from "vue";
+import { ref, watch, onMounted, onUnmounted, type Component } from "vue";
 import ContactInfo from "./ContactInfo.vue";
+import PrivacyPolicyDialog from "./PrivacyPolicyDialog.vue";
+import { PRIVACY_POLICY } from "@/constants/company-info";
 
 // 카카오 주소 검색 API 타입 정의
 declare global {
@@ -264,7 +299,7 @@ declare global {
 
 interface Props {
   contacts: Array<{
-    icon: any;
+    icon: Component;
     title: string;
     content: string;
     subtitle?: string;
@@ -294,6 +329,8 @@ const emit = defineEmits<Emits>();
 
 const formData = ref({ ...props.form });
 const isSubmitting = ref(false);
+const privacyAgreed = ref(false);
+const privacyDialogRef = ref<InstanceType<typeof PrivacyPolicyDialog>>();
 
 // Refs for animation elements
 const titleRef = ref<HTMLElement>();
@@ -347,6 +384,11 @@ const handleSubmit = async () => {
     return;
   }
 
+  if (!privacyAgreed.value) {
+    alert("개인정보 수집·이용에 동의해주세요.");
+    return;
+  }
+
   isSubmitting.value = true;
 
   try {
@@ -367,6 +409,7 @@ const handleSubmit = async () => {
           formData.value.roadAddress || ""
         } ${formData.value.detailAddress || ""}`.trim() || "미입력",
       message: formData.value.message || "특별한 요청사항 없음",
+      privacy_agreed: privacyAgreed.value,
       inquiry_date: new Date().toLocaleDateString("ko-KR", {
         year: "numeric",
         month: "long",
@@ -411,6 +454,7 @@ const handleSubmit = async () => {
       budget: "",
       message: "",
     };
+    privacyAgreed.value = false;
 
     emit("submit-form");
   } catch (error: any) {

@@ -82,13 +82,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, type Component } from "vue";
 import FeatureCard from "../FeatureCard.vue";
 import { COMPANY_INFO } from "../../constants/company-info";
 
 interface Props {
   features: Array<{
-    icon: any;
+    icon: Component;
     title: string;
     description: string;
   }>;
