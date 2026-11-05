@@ -61,6 +61,7 @@ import {
   CONTACT_LIST,
   INITIAL_FORM_DATA,
 } from "../constants/company-info";
+import { FEATURES } from "../constants/features";
 
 const activeSection = ref("home");
 
@@ -96,7 +97,10 @@ const portfolio = PORTFOLIO_PROJECTS.map((project) => ({
   images: [...project.images],
 }));
 
-const contacts = CONTACT_LIST.map((contact) => ({
+// 폼 문의를 받지 않는 동안에는 "이메일 문의" 카드도 숨김
+const contacts = CONTACT_LIST.filter(
+  (contact) => FEATURES.inquiryForm || contact.id !== "email"
+).map((contact) => ({
   ...contact,
   icon: iconMap[contact.icon as keyof typeof iconMap],
 }));
