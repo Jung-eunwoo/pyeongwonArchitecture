@@ -108,15 +108,17 @@ export type InquiryValidationResult =
   | { ok: false; bot: false; message: string };
 
 // 메일 링크(mailto:)에 그대로 들어가므로 ?·&·%·, 등 URL/헤더 구분 문자는 허용하지 않는다
+// 최상위 도메인은 영문 또는 국제화 도메인의 punycode(xn--…, 예: .한국)
 const EMAIL_RE =
-  /^[A-Za-z0-9._+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+  /^[A-Za-z0-9._+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.([A-Za-z]{2,}|xn--[A-Za-z0-9-]+)$/;
 const PHONE_RE =
   /^(0\d{1,2}-\d{3,4}-\d{4}|050\d-\d{3,4}-\d{4}|1[5-9]\d{2}-\d{4})$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const POSTAL_RE = /^\d{5}$/;
 // 제어문자·서식 문자(줄바꿈, 방향 전환 Bidi, 보이지 않는 문자 등)
 const CONTROL_RE = /[\p{Cc}\p{Cf}]/u;
-// 여러 줄 입력(문의 내용)은 줄바꿈만 허용
-const MULTILINE_CONTROL_RE = /[^\P{Cc}\n]|\p{Cf}/u;
+// 여러 줄 입력(문의 내용)은 줄바꿈과, 이모지 조합(🙇‍♂️ 등)에 쓰이는 ZWJ(U+200D)만 허용
+const MULTILINE_CONTROL_RE = /[^\P{Cc}\n]|[^\P{Cf}\u200D]/u;
 
 /** 실제로 존재하는 날짜인지 (2026-13-45 같은 값 거부) */
 function isValidDate(value: string): boolean {
@@ -137,7 +139,6 @@ export function labelOf(
 ): string {
   return options.find((o) => o.value === value)?.label ?? value;
 }
-const POSTAL_RE = /^\d{5}$/;
 
 const str = (v: unknown): string => (typeof v === "string" ? v.trim() : "");
 const isOneOf = (v: string, options: readonly { value: string }[]) =>
@@ -178,13 +179,20 @@ export function validateInquiry(input: unknown): InquiryValidationResult {
   const detailAddress = str(body.detail_address);
   const message = str(body.message).replace(/\r\n?/g, "\n");
 
-  if (
-    [name, email, constructionDate, postalCode, roadAddress, detailAddress].some(
-      (v) => CONTROL_RE.test(v)
-    ) ||
-    MULTILINE_CONTROL_RE.test(message)
-  ) {
-    return fail("입력값에 사용할 수 없는 문자가 있습니다.");
+  // 보이지 않는 문자는 사용자가 찾을 수 없으므로 어느 항목인지 알려준다
+  const singleLineFields: [label: string, value: string][] = [
+    ["이름", name],
+    ["이메일", email],
+    ["공사 예정일", constructionDate],
+    ["우편번호", postalCode],
+    ["주소", roadAddress],
+    ["상세주소", detailAddress],
+  ];
+  const badField =
+    singleLineFields.find(([, v]) => CONTROL_RE.test(v))?.[0] ??
+    (MULTILINE_CONTROL_RE.test(message) ? "문의 내용" : undefined);
+  if (badField) {
+    return fail(`${badField}에 사용할 수 없는 문자가 있습니다.`);
   }
 
   if (!name || name.length > INQUIRY_LIMITS.name) {

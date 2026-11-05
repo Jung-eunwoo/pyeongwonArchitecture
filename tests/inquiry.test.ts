@@ -78,8 +78,9 @@ describe("validateInquiry", () => {
     ])("mailto에 섞일 수 있는 값 거부: %s", (email) => {
       expect(errorOf({ customer_email: email })).toMatch(/이메일/);
     });
-    it("일반 주소는 통과", () => {
+    it("일반 주소·국제화 도메인(punycode)은 통과", () => {
       expect(errorOf({ customer_email: "first.last+tag@mail.co.kr" })).toBeNull();
+      expect(errorOf({ customer_email: "hong@example.xn--3e0b707e" })).toBeNull();
     });
   });
 
@@ -104,6 +105,14 @@ describe("validateInquiry", () => {
       expect(errorOf({ message: "첫 줄\n둘째 줄" })).toBeNull();
       expect(errorOf({ message: "탭\t문자" })).toMatch(/사용할 수 없는/);
       expect(errorOf({ message: "숨김​문자" })).toMatch(/사용할 수 없는/);
+    });
+    it("문의 내용의 이모지 조합(ZWJ)은 허용", () => {
+      expect(errorOf({ message: "부탁드립니다🙇‍♂️" })).toBeNull();
+      expect(errorOf({ customer_name: "홍‍길동" })).toMatch(/사용할 수 없는/);
+    });
+    it("어느 항목에 문제가 있는지 알려준다", () => {
+      expect(errorOf({ detail_address: "1층​" })).toMatch(/^상세주소에/);
+      expect(errorOf({ message: "탭\t문자" })).toMatch(/^문의 내용에/);
     });
   });
 

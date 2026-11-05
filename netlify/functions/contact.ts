@@ -120,7 +120,8 @@ const handler: Handler = async (event) => {
   }
 
   if (!isSameOrigin(event)) {
-    return respond(403, { error: "Forbidden" });
+    // 화면에 그대로 표시되므로 한국어로 응답
+    return respond(403, { error: "잘못된 요청입니다." });
   }
 
   const contentType = event.headers["content-type"] ?? "";
