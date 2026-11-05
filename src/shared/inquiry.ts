@@ -107,10 +107,38 @@ export type InquiryValidationResult =
   | { ok: false; bot: true }
   | { ok: false; bot: false; message: string };
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_RE = /^(0\d{1,2}-\d{3,4}-\d{4}|1[5-9]\d{2}-\d{4})$/;
+// 메일 링크(mailto:)에 그대로 들어가므로 ?·&·%·, 등 URL/헤더 구분 문자는 허용하지 않는다
+// 최상위 도메인은 영문 또는 국제화 도메인의 punycode(xn--…, 예: .한국)
+const EMAIL_RE =
+  /^[A-Za-z0-9._+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.([A-Za-z]{2,}|xn--[A-Za-z0-9-]+)$/;
+const PHONE_RE =
+  /^(0\d{1,2}-\d{3,4}-\d{4}|050\d-\d{3,4}-\d{4}|1[5-9]\d{2}-\d{4})$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const POSTAL_RE = /^\d{5}$/;
+// 제어문자·서식 문자(줄바꿈, 방향 전환 Bidi, 보이지 않는 문자 등)
+const CONTROL_RE = /[\p{Cc}\p{Cf}]/u;
+// 여러 줄 입력(문의 내용)은 줄바꿈과, 이모지 조합(🙇‍♂️ 등)에 쓰이는 ZWJ(U+200D)만 허용
+const MULTILINE_CONTROL_RE = /[^\P{Cc}\n]|[^\P{Cf}\u200D]/u;
+
+/** 실제로 존재하는 날짜인지 (2026-13-45 같은 값 거부) */
+function isValidDate(value: string): boolean {
+  if (!DATE_RE.test(value)) return false;
+  const [y, m, d] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(y!, m! - 1, d!));
+  return (
+    date.getUTCFullYear() === y &&
+    date.getUTCMonth() === m! - 1 &&
+    date.getUTCDate() === d
+  );
+}
+
+/** 선택지 값 → 화면 라벨 (메일에는 "10-20" 대신 "10평 ~ 20평"으로) */
+export function labelOf(
+  options: readonly { value: string; label: string }[],
+  value: string
+): string {
+  return options.find((o) => o.value === value)?.label ?? value;
+}
 
 const str = (v: unknown): string => (typeof v === "string" ? v.trim() : "");
 const isOneOf = (v: string, options: readonly { value: string }[]) =>
@@ -149,7 +177,23 @@ export function validateInquiry(input: unknown): InquiryValidationResult {
   const postalCode = str(body.postal_code);
   const roadAddress = str(body.road_address);
   const detailAddress = str(body.detail_address);
-  const message = str(body.message);
+  const message = str(body.message).replace(/\r\n?/g, "\n");
+
+  // 보이지 않는 문자는 사용자가 찾을 수 없으므로 어느 항목인지 알려준다
+  const singleLineFields: [label: string, value: string][] = [
+    ["이름", name],
+    ["이메일", email],
+    ["공사 예정일", constructionDate],
+    ["우편번호", postalCode],
+    ["주소", roadAddress],
+    ["상세주소", detailAddress],
+  ];
+  const badField =
+    singleLineFields.find(([, v]) => CONTROL_RE.test(v))?.[0] ??
+    (MULTILINE_CONTROL_RE.test(message) ? "문의 내용" : undefined);
+  if (badField) {
+    return fail(`${badField}에 사용할 수 없는 문자가 있습니다.`);
+  }
 
   if (!name || name.length > INQUIRY_LIMITS.name) {
     return fail("이름을 확인해주세요.");
@@ -164,7 +208,7 @@ export function validateInquiry(input: unknown): InquiryValidationResult {
   if (!isOneOf(constructionType, CONSTRUCTION_TYPES)) {
     return fail("공사 구분을 선택해주세요.");
   }
-  if (constructionDate && !DATE_RE.test(constructionDate)) {
+  if (constructionDate && !isValidDate(constructionDate)) {
     return fail("공사 예정일을 확인해주세요.");
   }
   if (area && !isOneOf(area, AREA_OPTIONS)) return fail("평형을 확인해주세요.");
