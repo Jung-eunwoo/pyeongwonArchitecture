@@ -3,7 +3,7 @@
   <section id="about" class="py-20 bg-white">
     <div class="container mx-auto px-4">
       <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16 fade-in-up" ref="titleRef">
+        <div class="text-center mb-16 fade-in-up" v-reveal>
           <h2 class="text-4xl font-bold text-gray-900 mb-4">평원건축 소개</h2>
           <p class="text-lg text-gray-600">
             신뢰와 품질로 함께하는 건축 파트너
@@ -11,7 +11,7 @@
         </div>
 
         <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <div class="fade-in-up" ref="contentRef">
+          <div class="fade-in-up" v-reveal>
             <h3 class="text-2xl font-bold text-gray-900 mb-6">
               {{ stats.experienceYears }}년 경험의 전문성
             </h3>
@@ -22,12 +22,11 @@
             </p>
             <div
               class="grid grid-cols-2 gap-6 stagger-animation"
-              ref="statsRef"
+              v-reveal
             >
               <div class="text-center">
                 <div
-                  class="text-3xl font-bold mb-2"
-                  :style="{ color: '#d52e38' }"
+                  class="text-3xl font-bold mb-2 text-brand"
                 >
                   {{ stats.completedProjects }}+
                 </div>
@@ -35,8 +34,7 @@
               </div>
               <div class="text-center">
                 <div
-                  class="text-3xl font-bold mb-2"
-                  :style="{ color: '#d52e38' }"
+                  class="text-3xl font-bold mb-2 text-brand"
                 >
                   {{ stats.experienceYears }}년
                 </div>
@@ -46,7 +44,7 @@
           </div>
           <div
             class="bg-gray-100 rounded-lg p-6 fade-in-up-delay"
-            ref="imageRef"
+            v-reveal
           >
             <div class="w-full h-96 rounded-lg overflow-hidden shadow-lg">
               <img
@@ -70,7 +68,7 @@
 
         <div
           class="grid md:grid-cols-3 gap-8 stagger-animation"
-          ref="featuresRef"
+          v-reveal
         >
           <FeatureCard
             v-for="feature in features"
@@ -86,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, type Component } from "vue";
+import type { Component } from "vue";
 import FeatureCard from "../FeatureCard.vue";
 import { COMPANY_INFO } from "../../constants/company-info";
 
@@ -103,55 +101,4 @@ interface Props {
 }
 
 defineProps<Props>();
-
-// Refs for animation elements
-const titleRef = ref<HTMLElement>();
-const contentRef = ref<HTMLElement>();
-const imageRef = ref<HTMLElement>();
-const statsRef = ref<HTMLElement>();
-const featuresRef = ref<HTMLElement>();
-
-let observer: IntersectionObserver;
-
-const setupIntersectionObserver = () => {
-  const options = {
-    threshold: 0.1,
-    rootMargin: "0px 0px -50px 0px",
-  };
-
-  observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
-      }
-    });
-  }, options);
-
-  // Observe all animation elements
-  const elementsToObserve = [
-    titleRef.value,
-    contentRef.value,
-    imageRef.value,
-    statsRef.value,
-    featuresRef.value,
-  ];
-
-  elementsToObserve.forEach((element) => {
-    if (element) {
-      observer.observe(element);
-    }
-  });
-};
-
-onMounted(() => {
-  setupIntersectionObserver();
-});
-
-onUnmounted(() => {
-  if (observer) {
-    observer.disconnect();
-  }
-});
 </script>
-
-<style scoped></style>

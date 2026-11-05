@@ -1,32 +1,21 @@
 [build]
-  # 빌드 명령어
   command = "npm run build"
-  
-  # 빌드 결과물이 생성되는 디렉토리
   publish = "dist"
-  
   # Node.js 22 LTS (Vite 7은 Node 20.19+ 필요). 로컬/CI는 .nvmrc와 맞춤
   environment = { NODE_VERSION = "22" }
 
-# SPA(Single Page Application) 라우팅을 위한 리다이렉트 설정
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# 단일 페이지(라우터 없음)이므로 SPA 리다이렉트를 두지 않는다.
+# (/* → /index.html 을 두면 없는 JS/CSS 요청에도 HTML이 200으로 내려가 MIME 오류가 난다)
 
-# 보안 헤더 설정
+# 보안 헤더
 [[headers]]
   for = "/*"
   [headers.values]
-    # HTTPS 강제 설정
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
-    
-    # XSS 보호
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    
-    # 컨텐츠 보안 정책
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
     # style-src / font-src 를 명시하지 않으면 default-src('self')가 적용되어
     # 외부 스타일·폰트가 차단됨. 폰트는 self-host 하므로 'self'로 충분.
     # GA4는 region1.google-analytics.com 등 서브도메인으로 수집 요청을 보냄.
@@ -44,8 +33,8 @@
       img-src 'self' data: https:;
       frame-src 'self' https://t1.daumcdn.net https://postcode.map.daum.net;
     """
-    
-# 정적 파일 캐싱 설정
+
+# Vite 빌드 결과물(파일명에 해시 포함)은 영구 캐시
 [[headers]]
   for = "/assets/*"
   [headers.values]
@@ -56,30 +45,3 @@
   for = "/images/*"
   [headers.values]
     Cache-Control = "public, max-age=604800"
-
-[[headers]]
-  for = "/*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/*.js"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-# 환경 변수 설정 (Netlify 대시보드에서도 설정 가능)
-# [build.environment]
-#   VITE_EMAILJS_SERVICE_ID = "your_service_id"
-#   VITE_EMAILJS_TEMPLATE_ID = "your_template_id"
-#   VITE_EMAILJS_CUSTOMER_TEMPLATE_ID = "your_customer_template_id"
-#   VITE_EMAILJS_PUBLIC_KEY = "your_public_key"
-
-# 빌드 플러그인 (일시적으로 비활성화)
-# [[plugins]]
-#   package = "@netlify/plugin-sitemap"
-
-# 404 에러 페이지 설정
-[[redirects]]
-  from = "/404"
-  to = "/index.html"
-  status = 200

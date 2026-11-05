@@ -54,7 +54,7 @@
             type="button"
             class="block w-full py-3 text-left text-base font-medium"
             :class="
-              activeSection === item.id ? 'text-[#d52e38]' : 'text-gray-700'
+              activeSection === item.id ? 'text-brand' : 'text-gray-700'
             "
             :aria-current="activeSection === item.id ? 'true' : undefined"
             @click="scrollToSection(item.id)"

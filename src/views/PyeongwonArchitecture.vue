@@ -20,12 +20,7 @@
     <PortfolioSection :portfolio="portfolio" />
 
     <!-- Contact Section -->
-    <ContactUsSection
-      :contacts="contacts"
-      :form="form"
-      @submit-form="submitForm"
-      @address-search="handleAddressSearch"
-    />
+    <ContactUsSection :contacts="contacts" />
 
     <!-- Footer -->
     <Footer />
@@ -35,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, type Component } from "vue";
+import type { Component } from "vue";
 import {
   Award,
   Building2,
@@ -62,11 +57,9 @@ import {
   SERVICES,
   PORTFOLIO_PROJECTS,
   CONTACT_LIST,
-  INITIAL_FORM_DATA,
 } from "../constants/company-info";
 import { FEATURES } from "../constants/features";
-
-const activeSection = ref("home");
+import { useActiveSection } from "../composables/useActiveSection";
 
 // 상수의 아이콘 이름 → lucide 아이콘 컴포넌트
 const iconMap = {
@@ -83,6 +76,7 @@ const iconMap = {
 
 // 상수에서 가져온 데이터에 실제 아이콘 컴포넌트 매핑
 const navItems = [...NAV_ITEMS];
+const activeSection = useActiveSection(NAV_ITEMS.map((item) => item.id));
 
 const features = COMPANY_FEATURES.map((feature) => ({
   ...feature,
@@ -108,52 +102,7 @@ const contacts = CONTACT_LIST.filter(
   icon: iconMap[contact.icon],
 }));
 
-const form = ref({ ...INITIAL_FORM_DATA });
-
 const scrollToSection = (sectionId: string) => {
-  const element = document.getElementById(sectionId);
-  if (element) {
-    element.scrollIntoView({ behavior: "smooth" });
-  }
+  document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
 };
-
-const handleScroll = () => {
-  const sections = ["home", "about", "services", "portfolio", "contact"];
-  const scrollPosition = window.scrollY + 100;
-
-  for (const section of sections) {
-    const element = document.getElementById(section);
-    if (element) {
-      const { offsetTop, offsetHeight } = element;
-      if (
-        scrollPosition >= offsetTop &&
-        scrollPosition < offsetTop + offsetHeight
-      ) {
-        activeSection.value = section;
-        break;
-      }
-    }
-  }
-};
-
-const handleAddressSearch = () => {
-  alert("주소 검색 기능입니다. 실제 서비스에서는 우편번호 API를 연동합니다.");
-};
-
-const submitForm = () => {
-  console.log("Form submitted:", form.value);
-  // alert는 ContactUsSection에서 처리하므로 여기서는 제거
-};
-
-onMounted(() => {
-  window.addEventListener("scroll", handleScroll);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("scroll", handleScroll);
-});
 </script>
-
-<style scoped>
-/* Tailwind CSS 클래스들이 정상적으로 작동하도록 보장 */
-</style>

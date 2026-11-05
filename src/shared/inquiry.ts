@@ -38,6 +38,35 @@ export const INQUIRY_LIMITS = {
 /** 폼이 열린 뒤 이 시간 안에 제출되면 봇으로 간주 */
 export const MIN_FILL_TIME_MS = 3000;
 
+/** 견적 문의 폼 입력값 (클라이언트) */
+export interface InquiryFormData {
+  name: string;
+  phone: string;
+  email: string;
+  constructionDate: string;
+  constructionType: string;
+  area: string;
+  postalCode: string;
+  roadAddress: string;
+  detailAddress: string;
+  budget: string;
+  message: string;
+}
+
+export const createEmptyInquiryForm = (): InquiryFormData => ({
+  name: "",
+  phone: "",
+  email: "",
+  constructionDate: "",
+  constructionType: "",
+  area: "",
+  postalCode: "",
+  roadAddress: "",
+  detailAddress: "",
+  budget: "",
+  message: "",
+});
+
 /** 클라이언트 → 서버 요청 본문 */
 export interface InquiryRequest {
   customer_name: string;

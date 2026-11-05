@@ -1,5 +1,22 @@
-/* Pretendard Font (self-hosted, dynamic subset: 실제 쓰인 글자 범위의 woff2만 내려받음) */
+@import "tailwindcss";
+/* Pretendard (self-host, dynamic subset: 실제 쓰인 글자 범위의 woff2만 내려받음) */
 @import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
+
+/* 디자인 토큰: text-brand, bg-brand, ring-brand, accent-brand 등으로 사용 */
+@theme {
+  --color-brand: #d52e38;
+  --font-sans: "Pretendard Variable", "Pretendard", -apple-system,
+    BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR",
+    "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+}
+
+/* 한국어 줄바꿈: 단어 단위로 끊고, 긴 단어는 넘치지 않게 (상속되므로 body에만 지정) */
+@layer base {
+  body {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+}
 
 /* Text Animation Styles */
 @keyframes slideUpFadeIn {
@@ -11,42 +28,6 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Global Font and Word Break Settings */
-* {
-  font-family: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
-    Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR",
-    "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-    sans-serif;
-  word-break: keep-all;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-/* Korean Text Specific Settings */
-html[lang="ko"] *,
-html *:lang(ko) {
-  word-break: keep-all;
-}
-
-/* Ensure proper line breaking for all text elements */
-p,
-span,
-div,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-li,
-td,
-th,
-label,
-button {
-  word-break: keep-all;
-  word-wrap: break-word;
 }
 
 @keyframes slideUpFadeInDelay {
@@ -151,4 +132,23 @@ button {
 .stagger-animation.is-visible > * {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* '동작 줄이기' 설정 사용자에게는 등장 애니메이션을 생략 */
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-up,
+  .animate-slide-up-delay-1,
+  .animate-slide-up-delay-2,
+  .animate-slide-up-slow {
+    animation: none;
+    opacity: 1;
+  }
+
+  .fade-in-up,
+  .fade-in-up-delay,
+  .stagger-animation > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }

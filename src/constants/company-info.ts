@@ -49,16 +49,6 @@ export const CONTACT_LINKS = {
   )}`,
 } as const;
 
-// 연락처 정보만 별도로 export
-export const CONTACT_INFO = {
-  phone: COMPANY_INFO.phone,
-  email: COMPANY_INFO.email,
-  address: COMPANY_INFO.address.fullAddress,
-} as const;
-
-// 비즈니스 아워
-export const BUSINESS_HOURS = COMPANY_INFO.businessHours;
-
 // 회사 실적
 export const COMPANY_STATS = COMPANY_INFO.performance;
 
@@ -216,21 +206,6 @@ export const CONTACT_LIST = [
     href: CONTACT_LINKS.map,
   },
 ] as const;
-
-// 견적 문의 폼 초기값
-export const INITIAL_FORM_DATA = {
-  name: "",
-  phone: "",
-  email: "",
-  constructionDate: "",
-  constructionType: "",
-  area: "",
-  postalCode: "",
-  roadAddress: "",
-  detailAddress: "",
-  budget: "",
-  message: "",
-} as const;
 
 // 개인정보 수집·이용 고지 (개인정보 보호법 제15조, 제22조)
 // ※ 보유기간·위탁 내용은 실제 운영 방식에 맞게 확인 후 수정하세요.

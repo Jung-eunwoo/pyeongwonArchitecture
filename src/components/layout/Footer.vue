@@ -97,5 +97,3 @@ import PrivacyPolicyDialog from "../PrivacyPolicyDialog.vue";
 
 const privacyDialogRef = ref<InstanceType<typeof PrivacyPolicyDialog>>();
 </script>
-
-<style scoped></style>
