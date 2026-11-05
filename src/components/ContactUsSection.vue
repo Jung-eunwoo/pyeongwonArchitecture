@@ -8,6 +8,7 @@
         </div>
 
         <div
+          v-if="FEATURES.inquiryForm"
           class="bg-white rounded-lg shadow-md p-8 mb-12 fade-in-up-delay"
           ref="formRef"
         >
@@ -218,8 +219,36 @@
           </form>
         </div>
 
+        <!-- 폼 비활성화 시: 전화 문의 안내 -->
         <div
-          class="grid md:grid-cols-3 gap-8 text-center stagger-animation"
+          v-else
+          class="bg-white rounded-lg shadow-md px-6 py-10 mb-12 text-center fade-in-up-delay"
+          ref="formRef"
+        >
+          <Phone class="mx-auto mb-4 h-12 w-12 text-[#d52e38]" />
+          <p class="mb-2 text-lg font-semibold text-gray-900">
+            견적 문의는 전화로 받고 있습니다
+          </p>
+          <p class="mb-6 text-gray-600">
+            공사 내용을 말씀해 주시면 상담 후 견적을 안내해 드립니다.
+          </p>
+          <a
+            :href="telHref"
+            class="inline-flex items-center gap-2 rounded-lg bg-[#d52e38] px-8 py-3 text-lg font-bold text-white transition-opacity hover:opacity-90"
+          >
+            <Phone class="h-5 w-5" />
+            {{ COMPANY_INFO.phone }}
+          </a>
+          <p class="mt-4 text-sm text-gray-500">
+            {{ COMPANY_INFO.businessHours.weekday }} ·
+            {{ COMPANY_INFO.businessHours.saturday }} ·
+            {{ COMPANY_INFO.businessHours.sunday }}
+          </p>
+        </div>
+
+        <div
+          class="grid gap-8 text-center stagger-animation"
+          :class="contacts.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'"
           ref="contactsRef"
         >
           <ContactInfo
@@ -238,7 +267,12 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
+import { Phone } from "lucide-vue-next";
 import ContactInfo from "./ContactInfo.vue";
+import { COMPANY_INFO } from "@/constants/company-info";
+import { FEATURES } from "@/constants/features";
+
+const telHref = `tel:${COMPANY_INFO.phone.replace(/-/g, "")}`;
 
 // 카카오 주소 검색 API 타입 정의
 declare global {
