@@ -27,17 +27,21 @@
     X-XSS-Protection = "1; mode=block"
     
     # 컨텐츠 보안 정책
+    # style-src / font-src 를 명시하지 않으면 default-src('self')가 적용되어
+    # 외부 스타일·폰트가 차단됨. 폰트는 self-host 하므로 'self'로 충분.
+    # GA4는 region1.google-analytics.com 등 서브도메인으로 수집 요청을 보냄.
     Content-Security-Policy = """
       default-src 'self';
       script-src 'self' 'unsafe-inline'
-        https://cdn.emailjs.com
         https://t1.daumcdn.net
         https://www.googletagmanager.com;
+      style-src 'self' 'unsafe-inline';
+      font-src 'self' data:;
       connect-src 'self'
-        https://api.emailjs.com
-        https://www.google-analytics.com
+        https://*.google-analytics.com
+        https://*.analytics.google.com
         https://www.googletagmanager.com;
-      img-src 'self' data: https: https://www.google-analytics.com;
+      img-src 'self' data: https:;
       frame-src 'self' https://t1.daumcdn.net https://postcode.map.daum.net;
     """
     

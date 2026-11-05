@@ -14,7 +14,7 @@
         <p
           class="text-xl text-gray-600 mb-8 leading-relaxed animate-slide-up-delay-1"
         >
-          평원건축은 40년의 경험과 노하우로 고객의 꿈을 실현하는 전문 건축 및
+          평원건축은 {{ COMPANY_STATS.experienceYears }}년의 경험과 노하우로 고객의 꿈을 실현하는 전문 건축 및
           인테리어 회사입니다.
           <br />
           주거공간부터 상업공간까지, 완벽한 설계와 시공으로 만족을 드립니다.
@@ -42,6 +42,8 @@
 </template>
 
 <script setup lang="ts">
+import { COMPANY_STATS } from "@/constants/company-info";
+
 interface Emits {
   (e: "scroll-to", sectionId: string): void;
 }
