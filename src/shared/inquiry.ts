@@ -110,7 +110,8 @@ export function validateInquiry(input: unknown): InquiryValidationResult {
   }
 
   const name = str(body.customer_name);
-  const phone = formatPhoneNumber(str(body.customer_phone));
+  const phoneDigits = str(body.customer_phone).replace(/\D/g, "");
+  const phone = formatPhoneNumber(phoneDigits);
   const email = str(body.customer_email);
   const constructionType = str(body.construction_type);
   const constructionDate = str(body.construction_date);
@@ -124,7 +125,10 @@ export function validateInquiry(input: unknown): InquiryValidationResult {
   if (!name || name.length > INQUIRY_LIMITS.name) {
     return fail("이름을 확인해주세요.");
   }
-  if (!PHONE_RE.test(phone)) return fail("연락처 형식을 확인해주세요.");
+  // formatPhoneNumber는 초과 자릿수를 잘라내므로, 잘린 번호가 통과하지 않도록 자릿수도 비교
+  if (!PHONE_RE.test(phone) || phone.replace(/\D/g, "") !== phoneDigits) {
+    return fail("연락처 형식을 확인해주세요.");
+  }
   if (email.length > INQUIRY_LIMITS.email || !EMAIL_RE.test(email)) {
     return fail("이메일 형식을 확인해주세요.");
   }

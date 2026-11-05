@@ -139,6 +139,8 @@ const handler: Handler = async (event) => {
       status: err?.status,
       text: err?.text ?? err?.message,
     });
+    // 회사 메일은 이미 발송됨 → 접수는 완료된 것이므로 실패로 응답하면 재전송으로 중복 접수가 생긴다
+    if (phase === "customer") return respond(200, { success: true });
     return respond(502, {
       error: "일시적인 오류로 접수하지 못했습니다.",
       debugId,

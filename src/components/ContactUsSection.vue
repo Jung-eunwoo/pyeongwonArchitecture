@@ -65,6 +65,7 @@
                 v-model="formData.email"
                 id="email"
                 type="email"
+                :maxlength="INQUIRY_LIMITS.email"
                 autocomplete="email"
                 placeholder="example@email.com"
                 required
@@ -194,6 +195,7 @@
                   v-model="formData.detailAddress"
                   ref="detailAddressRef"
                   id="detail-address"
+                  :maxlength="INQUIRY_LIMITS.address"
                   placeholder="상세 주소"
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d52e38] focus:border-transparent"
                 />
@@ -218,12 +220,13 @@
 
             <!-- 스팸 방지용 honeypot: 사람에게는 보이지 않고, 봇만 채우는 필드 -->
             <div class="hidden" aria-hidden="true">
-              <label for="company-website">회사 웹사이트</label>
+              <!-- 브라우저 자동완성이 채우지 않도록 의미 없는 이름/라벨을 쓴다 (채워지면 실제 문의가 조용히 버려짐) -->
+              <label for="hp-field">이 칸은 비워 두세요</label>
               <input
                 v-model="honeypot"
-                id="company-website"
+                id="hp-field"
                 type="text"
-                name="company_website"
+                name="hp_field"
                 tabindex="-1"
                 autocomplete="off"
               />
@@ -361,7 +364,6 @@ import {
   type InquiryRequest,
 } from "@/shared/inquiry";
 
-
 interface Props {
   contacts: Array<{
     icon: Component;
@@ -425,7 +427,7 @@ const handlePhoneInput = (event: Event) => {
 
 // 스팸 방지: honeypot 값과 폼이 화면에 뜬 시각
 const honeypot = ref("");
-const formShownAt = ref(Date.now());
+let formShownAt = Date.now();
 
 // Refs for animation elements
 const titleRef = ref<HTMLElement>();
@@ -506,7 +508,7 @@ const handleSubmit = async () => {
       message: formData.value.message,
       privacy_agreed: privacyAgreed.value,
       company_website: honeypot.value,
-      elapsed_ms: Date.now() - formShownAt.value,
+      elapsed_ms: Date.now() - formShownAt,
     };
 
     // 서버리스 함수로 이메일 전송 요청
@@ -548,7 +550,7 @@ const handleSubmit = async () => {
       message: "",
     };
     privacyAgreed.value = false;
-    formShownAt.value = Date.now();
+    formShownAt = Date.now();
 
     emit("submit-form");
   } catch (error: any) {
