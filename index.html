@@ -112,6 +112,18 @@
     </script>
     <!-- 카카오 주소 검색 API는 검색 버튼 클릭 시 지연 로드 (src/utils/daum-postcode.ts) -->
     <!-- Google tag(gtag.js)는 CSP를 위해 인라인 대신 src/analytics.ts에서 초기화 -->
+    <!-- JS가 꺼진 환경: v-reveal 애니메이션이 실행되지 않으므로 프리렌더된 내용을 바로 보여 준다 -->
+    <noscript>
+      <style>
+        /* CSS 번들이 이 뒤에 붙으므로 :root로 우선순위를 높인다 */
+        :root .fade-in-up,
+        :root .fade-in-up-delay,
+        :root .stagger-animation > * {
+          opacity: 1;
+          transform: none;
+        }
+      </style>
+    </noscript>
   </head>
 
   <body>
