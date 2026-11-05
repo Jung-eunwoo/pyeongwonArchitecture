@@ -61,6 +61,13 @@
         <div
           class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400"
         >
+          <button
+            type="button"
+            class="mb-2 font-semibold text-gray-300 hover:text-white"
+            @click="privacyDialogRef?.open()"
+          >
+            개인정보처리방침
+          </button>
           <p>
             &copy; {{ new Date().getFullYear() }} {{ COMPANY_INFO.name }}. All
             rights reserved.
@@ -68,17 +75,20 @@
         </div>
       </div>
     </div>
+    <PrivacyPolicyDialog ref="privacyDialogRef" />
   </footer>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import {
   COMPANY_INFO,
   CONTACT_LINKS,
   SERVICES,
 } from "@/constants/company-info";
+import PrivacyPolicyDialog from "../PrivacyPolicyDialog.vue";
 
-// Footer component script
+const privacyDialogRef = ref<InstanceType<typeof PrivacyPolicyDialog>>();
 </script>
 
 <style scoped></style>

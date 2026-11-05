@@ -8,6 +8,7 @@
         </div>
 
         <div
+          v-if="FEATURES.inquiryForm"
           class="bg-white rounded-lg shadow-md p-8 mb-12 fade-in-up-delay"
           ref="formRef"
         >
@@ -212,6 +213,37 @@
               ></textarea>
             </div>
 
+            <!-- 개인정보 수집·이용 동의 (필수) -->
+            <div class="rounded-md border border-gray-200 bg-gray-50 p-4">
+              <p class="mb-3 text-sm text-gray-600">
+                수집 항목: {{ PRIVACY_POLICY.items.required.join(", ") }} (필수)
+                · 이용 목적: {{ PRIVACY_POLICY.purpose }} · 보유 기간:
+                {{ PRIVACY_POLICY.retention }}
+              </p>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <label
+                  for="privacy-agreed"
+                  class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-800"
+                >
+                  <input
+                    v-model="privacyAgreed"
+                    id="privacy-agreed"
+                    type="checkbox"
+                    required
+                    class="h-4 w-4 accent-[#d52e38]"
+                  />
+                  개인정보 수집·이용에 동의합니다. (필수)
+                </label>
+                <button
+                  type="button"
+                  class="text-sm text-gray-500 underline hover:text-gray-700"
+                  @click="privacyDialogRef?.open()"
+                >
+                  전문 보기
+                </button>
+              </div>
+            </div>
+
             <p
               v-if="statusMessage"
               role="status"
@@ -239,8 +271,39 @@
           </form>
         </div>
 
+        <!-- 폼 비활성화 시: 전화 문의 안내 -->
         <div
-          class="grid md:grid-cols-3 gap-8 text-center stagger-animation"
+          v-else
+          class="bg-white rounded-lg shadow-md px-6 py-10 mb-12 text-center fade-in-up-delay"
+          ref="formRef"
+        >
+          <Phone class="mx-auto mb-4 h-12 w-12 text-[#d52e38]" />
+          <p class="mb-2 text-lg font-semibold text-gray-900">
+            견적 문의는 전화로 받고 있습니다
+          </p>
+          <p class="mb-6 text-gray-600">
+            공사 내용을 말씀해 주시면 상담 후 견적을 안내해 드립니다.
+          </p>
+          <a
+            :href="CONTACT_LINKS.tel"
+            class="inline-flex items-center gap-2 rounded-lg bg-[#d52e38] px-8 py-3 text-lg font-bold text-white transition-opacity hover:opacity-90"
+          >
+            <Phone class="h-5 w-5" />
+            {{ COMPANY_INFO.phone }}
+          </a>
+          <p class="mt-4 text-sm text-gray-500">
+            {{ COMPANY_INFO.businessHours.weekday }} ·
+            {{ COMPANY_INFO.businessHours.saturday }} ·
+            {{ COMPANY_INFO.businessHours.sunday }}
+          </p>
+        </div>
+
+        <!-- v-if/v-else 체인 밖에 둔다 (사이에 끼면 v-else가 깨짐) -->
+        <PrivacyPolicyDialog v-if="FEATURES.inquiryForm" ref="privacyDialogRef" />
+
+        <div
+          class="grid gap-8 text-center stagger-animation"
+          :class="contacts.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'"
           ref="contactsRef"
         >
           <ContactInfo
@@ -259,14 +322,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from "vue";
+import { ref, watch, onMounted, onUnmounted, type Component } from "vue";
+import { Phone } from "lucide-vue-next";
 import ContactInfo from "./ContactInfo.vue";
+import PrivacyPolicyDialog from "./PrivacyPolicyDialog.vue";
+import {
+  COMPANY_INFO,
+  CONTACT_LINKS,
+  PRIVACY_POLICY,
+} from "@/constants/company-info";
+import { FEATURES } from "@/constants/features";
 import { formatPhoneNumber } from "@/utils/phone";
 import { openPostcodeSearch } from "@/utils/daum-postcode";
 
 interface Props {
   contacts: Array<{
-    icon: any;
+    icon: Component;
     title: string;
     content: string;
     subtitle?: string;
@@ -297,6 +368,8 @@ const emit = defineEmits<Emits>();
 
 const formData = ref({ ...props.form });
 const isSubmitting = ref(false);
+const privacyAgreed = ref(false);
+const privacyDialogRef = ref<InstanceType<typeof PrivacyPolicyDialog>>();
 
 // 제출 결과/검증 오류를 alert 대신 폼 안에 표시
 const statusMessage = ref<{ type: "success" | "error"; text: string } | null>(
@@ -364,6 +437,11 @@ const handleSubmit = async () => {
     return;
   }
 
+  if (!privacyAgreed.value) {
+    showStatus("error", "개인정보 수집·이용에 동의해주세요.");
+    return;
+  }
+
   isSubmitting.value = true;
   statusMessage.value = null;
 
@@ -385,6 +463,7 @@ const handleSubmit = async () => {
           formData.value.roadAddress || ""
         } ${formData.value.detailAddress || ""}`.trim() || "미입력",
       message: formData.value.message || "특별한 요청사항 없음",
+      privacy_agreed: privacyAgreed.value,
       inquiry_date: new Date().toLocaleDateString("ko-KR", {
         year: "numeric",
         month: "long",
@@ -430,6 +509,7 @@ const handleSubmit = async () => {
       budget: "",
       message: "",
     };
+    privacyAgreed.value = false;
 
     emit("submit-form");
   } catch (error: any) {

@@ -6,6 +6,7 @@ export default {
       // Pretendard 폰트 설정
       fontFamily: {
         sans: [
+          "Pretendard Variable",
           "Pretendard",
           "-apple-system",
           "BlinkMacSystemFont",

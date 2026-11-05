@@ -17,10 +17,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, type Component } from "vue";
 
 interface Props {
-  icon: any;
+  icon: Component;
   title: string;
   content: string;
   subtitle?: string;
