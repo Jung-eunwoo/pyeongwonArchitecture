@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
@@ -18,12 +18,18 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="ko_KR" />
     <meta property="og:site_name" content="평원건축" />
-    <meta property="og:title" content="평원건축 | 부천 신축·증축·리모델링 전문" />
+    <meta
+      property="og:title"
+      content="평원건축 | 부천 신축·증축·리모델링 전문"
+    />
     <meta
       property="og:description"
       content="설계부터 시공·A/S까지 원스톱. 무료 상담 032-205-5707"
     />
-    <meta property="og:url" content="https://pyeongwon-architecture.netlify.app/" />
+    <meta
+      property="og:url"
+      content="https://pyeongwon-architecture.netlify.app/"
+    />
     <meta
       property="og:image"
       content="https://pyeongwon-architecture.netlify.app/og-image.jpg"
@@ -105,27 +111,7 @@
       }
     </script>
     <!-- 카카오 주소 검색 API는 검색 버튼 클릭 시 지연 로드 (src/utils/daum-postcode.ts) -->
-    <!-- Google tag (gtag.js)
-         dataLayer 큐는 바로 만들고, gtag.js 다운로드는 페이지 load 이후 유휴 시점으로 미룬다
-         (첫 화면의 폰트·JS와 대역폭을 다투지 않도록). 그 사이 이벤트는 큐에 쌓였다 전송된다. -->
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-CFMN6TEZ6C");
-      window.addEventListener("load", function () {
-        var load = function () {
-          var s = document.createElement("script");
-          s.async = true;
-          s.src = "https://www.googletagmanager.com/gtag/js?id=G-CFMN6TEZ6C";
-          document.head.appendChild(s);
-        };
-        if ("requestIdleCallback" in window) requestIdleCallback(load, { timeout: 3000 });
-        else setTimeout(load, 1500);
-      });
-    </script>
+    <!-- Google tag(gtag.js)는 CSP를 위해 인라인 대신 src/analytics.ts에서 초기화 -->
   </head>
 
   <body>

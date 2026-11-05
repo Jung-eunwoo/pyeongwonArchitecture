@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from "node:url";
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, type Plugin, type PluginOption } from "vite";
 import vue from "@vitejs/plugin-vue";
 import tailwindcss from "@tailwindcss/vite";
 import { generateFontSubset } from "./scripts/subset-font.mjs";
@@ -13,7 +13,9 @@ function pretendardSubset(): Plugin {
     name: "pretendard-subset",
     async buildStart() {
       const { chars, bytes } = await generateFontSubset();
-      this.info?.(`pretendard subset: ${chars} chars, ${(bytes / 1024).toFixed(1)}KB`);
+      this.info?.(
+        `pretendard subset: ${chars} chars, ${(bytes / 1024).toFixed(1)}KB`
+      );
     },
     transformIndexHtml: {
       order: "post",
@@ -46,7 +48,7 @@ const isDev = process.env.NODE_ENV !== "production";
 
 // 동적 설정 (devtools는 개발시에만 동적 import)
 export default defineConfig(async () => {
-  const plugins: any[] = [vue(), tailwindcss(), pretendardSubset()];
+  const plugins: PluginOption[] = [vue(), tailwindcss(), pretendardSubset()];
 
   if (isDev) {
     try {

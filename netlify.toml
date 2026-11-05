@@ -16,12 +16,18 @@
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
+    # 브라우저 기능 중 쓰지 않는 것은 모두 끈다
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
+
     # style-src / font-src 를 명시하지 않으면 default-src('self')가 적용되어
     # 외부 스타일·폰트가 차단됨. 폰트는 self-host 하므로 'self'로 충분.
     # GA4는 region1.google-analytics.com 등 서브도메인으로 수집 요청을 보냄.
+    # script-src: 인라인 스크립트가 없으므로 'unsafe-inline'을 두지 않는다
+    #   (gtag 초기화는 src/analytics.ts, JSON-LD는 실행되지 않는 데이터 블록이라 해당 없음)
+    # style-src 'unsafe-inline': 카카오 우편번호 위젯이 넣는 인라인 스타일, 프리렌더된 HTML의 style 속성에 필요
     Content-Security-Policy = """
       default-src 'self';
-      script-src 'self' 'unsafe-inline'
+      script-src 'self'
         https://t1.daumcdn.net
         https://www.googletagmanager.com;
       style-src 'self' 'unsafe-inline';
@@ -32,6 +38,11 @@
         https://www.googletagmanager.com;
       img-src 'self' data: https:;
       frame-src 'self' https://t1.daumcdn.net https://postcode.map.daum.net;
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      frame-ancestors 'none';
+      upgrade-insecure-requests;
     """
 
 # Vite 빌드 결과물(파일명에 해시 포함)은 영구 캐시

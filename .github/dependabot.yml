@@ -1,0 +1,17 @@
+version: 2
+updates:
+  # npm: 주 1회, 마이너·패치는 한 PR로 묶어서 받는다
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      timezone: "Asia/Seoul"
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
