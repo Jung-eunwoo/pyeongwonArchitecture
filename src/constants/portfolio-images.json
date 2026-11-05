@@ -1,0 +1,151 @@
+{
+  "/images/portfolio/bucheon-beombak-1.webp": {
+    "width": 480,
+    "height": 640,
+    "variants": [
+      400
+    ]
+  },
+  "/images/portfolio/bucheon-beombak-2.webp": {
+    "width": 624,
+    "height": 1248,
+    "variants": [
+      400
+    ]
+  },
+  "/images/portfolio/bucheon-beombak-3.webp": {
+    "width": 480,
+    "height": 640,
+    "variants": [
+      400
+    ]
+  },
+  "/images/portfolio/bucheon-okgil-1.webp": {
+    "width": 1200,
+    "height": 675,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/bucheon-okgil-2.webp": {
+    "width": 1200,
+    "height": 600,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/bucheon-okgil-3.webp": {
+    "width": 1200,
+    "height": 600,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/duncheon-church-1.webp": {
+    "width": 1200,
+    "height": 900,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/duncheon-church-2.webp": {
+    "width": 1200,
+    "height": 900,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/duncheon-church-3.webp": {
+    "width": 1200,
+    "height": 900,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/gimpo-commercial-1.webp": {
+    "width": 1200,
+    "height": 900,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/gimpo-commercial-2.webp": {
+    "width": 1200,
+    "height": 900,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/gimpo-commercial-3.webp": {
+    "width": 1200,
+    "height": 900,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/gimpo-commercial-4.webp": {
+    "width": 1200,
+    "height": 900,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/hwagok-pcroom-1.webp": {
+    "width": 1200,
+    "height": 600,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/hwagok-pcroom-2.webp": {
+    "width": 1200,
+    "height": 600,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/hwagok-pcroom-3.webp": {
+    "width": 1200,
+    "height": 600,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/sunchang-hanok-1.webp": {
+    "width": 1200,
+    "height": 600,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/sunchang-hanok-2.webp": {
+    "width": 1200,
+    "height": 600,
+    "variants": [
+      400,
+      800
+    ]
+  },
+  "/images/portfolio/sunchang-hanok-3.webp": {
+    "width": 1200,
+    "height": 600,
+    "variants": [
+      400,
+      800
+    ]
+  }
+}

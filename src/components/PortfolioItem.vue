@@ -23,18 +23,27 @@
           :style="{ transform: `translateX(-${currentImageIndex * 100}%)` }"
         >
           <div
-            v-for="(image, index) in images"
+            v-for="(image, index) in imageAttrs"
             :key="index"
             class="w-full flex-shrink-0 h-full"
           >
-            <!-- 카드가 화면 근처에 오면 모든 슬라이드 사진을 불러온다
+            <!-- 첫 장은 항상 렌더링(검색엔진·이미지 검색이 읽을 수 있게, 브라우저 lazy 로딩).
+                 나머지 슬라이드는 카드가 화면 근처에 오면 불러온다
                  (브라우저 lazy 로딩은 가로로 숨겨진 슬라이드를 늦게 불러와 넘길 때 빈 화면이 보임) -->
             <img
-              v-if="hasEnteredView"
-              :src="image"
-              :alt="`${title} 이미지 ${index + 1}`"
+              v-if="index === 0 || hasEnteredView"
+              :src="image.src"
+              :srcset="image.srcset"
+              :sizes="image.sizes"
+              :width="image.width"
+              :height="image.height"
+              :alt="`${type} · ${title} 시공 사진 ${index + 1}/${images.length}`"
+              :loading="index === 0 ? 'lazy' : undefined"
               decoding="async"
-              class="w-full h-full object-cover"
+              class="w-full h-full"
+              :class="
+                image.portrait ? 'object-contain bg-gray-100' : 'object-cover'
+              "
               @error="handleImageError"
             />
           </div>
@@ -137,6 +146,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { getResponsiveImageAttrs } from "@/utils/responsive-image";
 
 interface Props {
   title: string;
@@ -145,6 +155,9 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+// 사진별 srcset·크기 정보는 사진 목록이 바뀔 때만 계산 (슬라이드가 넘어갈 때마다 다시 만들지 않음)
+const imageAttrs = computed(() => props.images.map(getResponsiveImageAttrs));
 
 // 현재 이미지 인덱스
 const currentImageIndex = ref(0);
@@ -173,6 +186,12 @@ const nextImage = () => {
 // 이미지 로드 에러 처리
 const handleImageError = (event: Event) => {
   const img = event.target as HTMLImageElement;
+  // 변형 파일(-400/-800)만 없을 수 있으므로 먼저 원본(src)으로 다시 시도하고, 그래도 실패하면 숨긴다
+  if (img.hasAttribute("srcset")) {
+    img.removeAttribute("srcset");
+    img.removeAttribute("sizes");
+    return;
+  }
   img.style.display = "none";
 };
 

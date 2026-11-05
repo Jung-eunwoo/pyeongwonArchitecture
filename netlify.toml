@@ -63,6 +63,11 @@
     Cache-Control = "public, max-age=604800"
 
 [[headers]]
+  for = "/apple-touch-icon.png"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
   for = "/og-image.jpg"
   [headers.values]
     Cache-Control = "public, max-age=604800"

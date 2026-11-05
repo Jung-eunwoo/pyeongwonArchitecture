@@ -2,7 +2,9 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>평원건축 | 부천 신축·증축·리모델링 전문</title>
     <meta
@@ -35,9 +37,15 @@
       {
         "@context": "https://schema.org",
         "@type": "GeneralContractor",
+        "@id": "https://pyeongwon-architecture.netlify.app/#business",
         "name": "평원건축",
+        "legalName": "(주)평원건축",
+        "description": "부천을 기반으로 현장 맞춤형 설계와 시공을 제공하는 건축·인테리어 회사. 실내 인테리어, 건물 리모델링, 신축, 집수리 및 방수공사.",
         "url": "https://pyeongwon-architecture.netlify.app/",
-        "image": "https://pyeongwon-architecture.netlify.app/og-image.jpg",
+        "image": [
+          "https://pyeongwon-architecture.netlify.app/og-image.jpg",
+          "https://pyeongwon-architecture.netlify.app/images/office.webp"
+        ],
         "logo": "https://pyeongwon-architecture.netlify.app/logo.png",
         "telephone": "+82-32-205-5707",
         "faxNumber": "+82-32-205-5708",
@@ -50,11 +58,40 @@
           "postalCode": "14662",
           "addressCountry": "KR"
         },
-        "areaServed": "KR",
+        "hasMap": "https://naver.me/Gy3TOM0N",
+        "areaServed": [
+          {
+            "@type": "City",
+            "name": "부천시"
+          },
+          {
+            "@type": "Country",
+            "name": "대한민국"
+          }
+        ],
+        "knowsAbout": [
+          "실내 인테리어",
+          "건물 리모델링",
+          "신축",
+          "증축",
+          "집수리",
+          "방수공사"
+        ],
+        "sameAs": [
+          "https://naver.me/Gy3TOM0N",
+          "https://www.daangn.com/kr/local-profile/%ED%8F%89%EC%9B%90%EA%B1%B4%EC%B6%95-f1braryx4ofp/",
+          "https://www.saramin.co.kr/zf_user/company-info/view/csn/eDZLNXNnMlVzcFRiMFk0Nk51WXltZz09/company_nm/%28%EC%A3%BC%29%ED%8F%89%EC%9B%90%EA%B1%B4%EC%B6%95"
+        ],
         "openingHoursSpecification": [
           {
             "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ],
             "opens": "09:00",
             "closes": "18:00"
           },
