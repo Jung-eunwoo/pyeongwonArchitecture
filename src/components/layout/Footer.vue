@@ -8,7 +8,7 @@
             <div class="flex items-center space-x-3 mb-4">
               <img
                 src="/logo.png"
-                alt="평원건축 로고"
+                alt=""
                 width="40"
                 height="40"
                 class="h-10 w-auto"

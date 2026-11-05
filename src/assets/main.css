@@ -22,6 +22,16 @@
 
 /* 한국어 줄바꿈: 단어 단위로 끊고, 긴 단어는 넘치지 않게 (상속되므로 body에만 지정) */
 @layer base {
+  /* 고정 헤더(약 73px)에 섹션 제목·포커스된 요소가 가리지 않도록 */
+  html {
+    scroll-padding-top: 80px;
+  }
+
+  /* 스크립트로 포커스를 옮긴 섹션(tabindex=-1)에는 포커스 테두리를 그리지 않는다 */
+  section[tabindex="-1"]:focus {
+    outline: none;
+  }
+
   body {
     word-break: keep-all;
     overflow-wrap: break-word;

@@ -7,7 +7,7 @@
         <div class="flex items-center space-x-3">
           <img
             src="/logo.png"
-            alt="평원건축 로고"
+            alt=""
             width="40"
             height="40"
             class="h-10 w-auto"
@@ -39,6 +39,7 @@
 
         <!-- 모바일 메뉴 토글 -->
         <button
+          ref="menuToggleRef"
           type="button"
           class="-mr-2 rounded-md p-2 text-gray-700 hover:bg-gray-100 md:hidden"
           :aria-expanded="isMenuOpen"
@@ -63,9 +64,11 @@
         <li v-for="item in navItems" :key="item.id">
           <button
             type="button"
-            class="block w-full py-3 text-left text-base font-medium"
+            class="block w-full py-3 text-left text-base font-medium underline-offset-8"
             :class="
-              activeSection === item.id ? 'text-brand' : 'text-gray-700'
+              activeSection === item.id
+                ? 'text-brand underline decoration-2'
+                : 'text-gray-700'
             "
             :aria-current="activeSection === item.id ? 'true' : undefined"
             @click="scrollToSection(item.id)"
@@ -97,15 +100,19 @@ defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const isMenuOpen = ref(false);
+const menuToggleRef = ref<HTMLButtonElement>();
 
 const scrollToSection = (sectionId: string) => {
   isMenuOpen.value = false;
   emit("scroll-to", sectionId);
 };
 
-// ESC로 닫기
+// ESC로 닫으면 포커스를 메뉴 버튼으로 돌려준다 (숨겨진 메뉴 안에 포커스가 남아 body로 빠지지 않게).
+// 항목을 고른 경우에는 부모가 이동한 섹션으로 포커스를 옮긴다.
 const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === "Escape") isMenuOpen.value = false;
+  if (event.key !== "Escape") return;
+  isMenuOpen.value = false;
+  menuToggleRef.value?.focus();
 };
 
 // md 이상으로 화면이 커지면 모바일 메뉴 상태 초기화
