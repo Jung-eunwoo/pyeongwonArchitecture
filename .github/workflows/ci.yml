@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # .nvmrc는 Netlify 운영 빌드(netlify.toml의 NODE_VERSION)와 같은 버전으로 유지
       - name: Setup Node.js
