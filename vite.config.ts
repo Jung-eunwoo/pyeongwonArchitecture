@@ -11,6 +11,8 @@ import { generateFontSubset } from "./scripts/subset-font.mjs";
 function pretendardSubset(): Plugin {
   return {
     name: "pretendard-subset",
+    // 프리렌더용 SSR 빌드는 CSS·폰트를 만들지 않으므로 클라이언트 빌드에서만 생성
+    apply: (_config, env) => !env.isSsrBuild,
     async buildStart() {
       const { chars, bytes } = await generateFontSubset();
       this.info?.(
