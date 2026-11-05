@@ -1,5 +1,6 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
 import emailjs from "@emailjs/nodejs";
+import { FEATURES } from "../../src/constants/features";
 import { validateInquiry, type InquiryData } from "../../src/shared/inquiry";
 
 // 같은 사이트에서만 호출하므로 CORS 헤더는 두지 않는다 (브라우저가 교차 출처 호출을 막음)
@@ -75,6 +76,11 @@ function toTemplateParams(data: InquiryData) {
 }
 
 const handler: Handler = async (event) => {
+  // 폼 문의 비활성화 중에는 직접 호출도 받지 않음 (스팸 메일 발송 방지)
+  if (!FEATURES.inquiryForm) {
+    return respond(503, { error: "현재 온라인 문의를 받지 않습니다." });
+  }
+
   if (event.httpMethod !== "POST") {
     return respond(405, { error: "Method not allowed" });
   }

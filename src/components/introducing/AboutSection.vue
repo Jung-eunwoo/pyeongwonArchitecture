@@ -13,10 +13,10 @@
         <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
           <div class="fade-in-up" ref="contentRef">
             <h3 class="text-2xl font-bold text-gray-900 mb-6">
-              40년 경험의 전문성
+              {{ stats.experienceYears }}년 경험의 전문성
             </h3>
             <p class="text-gray-600 mb-6 leading-relaxed">
-              평원건축은 40년간 수많은 프로젝트를 성공적으로 완수하며 건축 및
+              평원건축은 {{ stats.experienceYears }}년간 수많은 프로젝트를 성공적으로 완수하며 건축 및
               인테리어 분야에서 확고한 신뢰를 쌓아왔습니다. 고객의
               라이프스타일과 니즈를 정확히 파악하여 최적의 공간을 제안합니다.
             </p>
@@ -82,13 +82,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, type Component } from "vue";
 import FeatureCard from "../FeatureCard.vue";
 import { COMPANY_INFO } from "../../constants/company-info";
 
 interface Props {
   features: Array<{
-    icon: any;
+    icon: Component;
     title: string;
     description: string;
   }>;

@@ -51,8 +51,8 @@ export interface InquiryRequest {
   road_address?: string;
   detail_address?: string;
   message?: string;
-  /** 개인정보 수집·이용 동의 (#1의 동의 체크박스에서 전송) */
-  privacy_agreed?: boolean;
+  /** 개인정보 수집·이용 동의 */
+  privacy_agreed: boolean;
   /** honeypot: 사람에게는 보이지 않는 필드. 값이 있으면 봇 */
   company_website?: string;
   /** 폼 노출 후 제출까지 걸린 시간(ms) */
