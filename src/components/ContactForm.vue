@@ -34,6 +34,7 @@
             :value="formData.phone"
             @input="handlePhoneInput"
             id="phone"
+            aria-describedby="phone-hint"
             type="tel"
             inputmode="numeric"
             autocomplete="tel"
@@ -42,7 +43,7 @@
             required
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
           />
-          <p class="text-sm text-gray-500">
+          <p id="phone-hint" class="text-sm text-gray-500">
             ※실제 연락을 받을 수 있는 번호를 입력해주세요.
           </p>
         </div>
@@ -57,6 +58,7 @@
         <input
           v-model="formData.email"
           id="email"
+          aria-describedby="email-hint"
           type="email"
           :maxlength="INQUIRY_LIMITS.email"
           autocomplete="email"
@@ -64,7 +66,7 @@
           required
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
         />
-        <p class="text-sm text-gray-500">
+        <p id="email-hint" class="text-sm text-gray-500">
           ※실제 연락을 받을 수 있는 이메일을 입력해주세요.
         </p>
       </div>
@@ -152,18 +154,18 @@
         </div>
       </div>
 
-      <div>
-        <label
-          for="address"
-          class="block text-sm font-medium text-gray-700 mb-2"
-          >공사 예정지 주소</label
-        >
+      <!-- 주소 입력 3칸을 하나의 묶음으로, 각 칸에도 이름을 붙인다 (placeholder만으로는 입력 후 칸 이름이 사라짐) -->
+      <fieldset>
+        <legend class="block text-sm font-medium text-gray-700 mb-2">
+          공사 예정지 주소
+        </legend>
         <div class="space-y-3">
           <div class="flex gap-2">
             <input
               v-model="formData.postalCode"
               id="postal-code"
               placeholder="우편번호"
+              aria-label="우편번호"
               readonly
               class="min-w-0 flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent bg-gray-50"
             />
@@ -172,15 +174,17 @@
               @click="handleAddressSearch"
               @pointerenter="preloadPostcode"
               @focus="preloadPostcode"
-              class="px-4 py-2 bg-brand text-white rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
+              class="px-4 py-2 bg-brand text-white rounded-md border border-transparent hover:bg-brand-dark transition-colors whitespace-nowrap"
             >
-              검색
+              <span aria-hidden="true">검색</span>
+              <span class="sr-only">주소 검색</span>
             </button>
           </div>
           <input
             v-model="formData.roadAddress"
             id="road-address"
             placeholder="도로명 주소"
+            aria-label="도로명 주소"
             readonly
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent bg-gray-50"
           />
@@ -190,10 +194,11 @@
             id="detail-address"
             :maxlength="INQUIRY_LIMITS.address"
             placeholder="상세 주소"
+            aria-label="상세 주소"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
           />
         </div>
-      </div>
+      </fieldset>
 
       <div>
         <label
@@ -256,25 +261,27 @@
         </div>
       </div>
 
-      <p
-        v-if="statusMessage"
-        role="status"
-        aria-live="polite"
-        class="rounded-md px-4 py-3 text-sm"
-        :class="
-          statusMessage.type === 'success'
-            ? 'bg-green-50 text-green-800'
-            : 'bg-red-50 text-red-700'
-        "
-      >
-        {{ statusMessage.text }}
-      </p>
+      <!-- 안내 영역은 항상 DOM에 두고 내용만 바꾼다 (요소가 새로 생기면서 동시에 내용이 들어가면
+           스크린리더가 안내를 놓치는 경우가 많음) -->
+      <div role="status" aria-live="polite" aria-atomic="true">
+        <p
+          v-if="statusMessage"
+          class="rounded-md px-4 py-3 text-sm"
+          :class="
+            statusMessage.type === 'success'
+              ? 'bg-green-50 text-green-800'
+              : 'bg-red-50 text-red-700'
+          "
+        >
+          {{ statusMessage.text }}
+        </p>
+      </div>
 
       <div class="text-center">
         <button
           type="submit"
           :disabled="isSubmitting"
-          class="bg-brand text-white px-12 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          class="bg-brand text-white px-12 py-3 rounded-lg font-medium border border-transparent hover:bg-brand-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span v-if="isSubmitting">전송 중...</span>
           <span v-else>견적 문의하기</span>

@@ -59,7 +59,7 @@
             </div>
             <div class="mt-4 text-center">
               <p class="text-gray-700 font-medium">평원건축 사무실</p>
-              <p class="text-sm text-gray-500 mt-1">
+              <p class="text-sm text-gray-600 mt-1">
                 {{ COMPANY_INFO.address.fullAddress }}
               </p>
             </div>

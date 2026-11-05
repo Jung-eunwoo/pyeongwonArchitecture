@@ -19,7 +19,7 @@
         @touchend="handleTouchEnd"
       >
         <div
-          class="flex transition-transform duration-500 ease-in-out h-full"
+          class="flex transition-transform duration-500 ease-in-out h-full motion-reduce:transition-none"
           :style="{ transform: `translateX(-${currentImageIndex * 100}%)` }"
         >
           <div
@@ -115,6 +115,19 @@
             />
           </svg>
         </button>
+
+        <!-- 자동 넘김 정지/재생 (WCAG 2.2.2: 자동으로 움직이는 콘텐츠는 멈출 수 있어야 함) -->
+        <button
+          v-if="images.length > 1 && !prefersReducedMotion"
+          type="button"
+          @click="isUserPaused = !isUserPaused"
+          class="absolute bottom-2 right-2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
+          :aria-label="isUserPaused ? `${title} 사진 자동 넘김 재생` : `${title} 사진 자동 넘김 정지`"
+          :aria-pressed="isUserPaused ? 'true' : 'false'"
+        >
+          <Play v-if="isUserPaused" class="h-3.5 w-3.5" />
+          <Pause v-else class="h-3.5 w-3.5" />
+        </button>
       </div>
 
       <!-- 이미지가 없을 때 플레이스홀더 -->
@@ -146,6 +159,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { Pause, Play } from "lucide-vue-next";
 import { getResponsiveImageAttrs } from "@/utils/responsive-image";
 
 interface Props {
@@ -195,25 +209,23 @@ const handleImageError = (event: Event) => {
   img.style.display = "none";
 };
 
-// 사용자가 직접 넘기면 자동 슬라이드 타이머를 다시 시작 (넘기자마자 또 넘어가지 않도록)
-const restartAutoSlide = () => {
-  stopAutoSlide();
-  startAutoSlide();
-};
+// 사용자가 직접 넘기면 그 카드의 자동 넘김은 멈춘다 (보고 있는 사진이 바뀌지 않게).
+// 정지 버튼으로 다시 켤 수 있다.
+const isUserPaused = ref(false);
 
 const goTo = (index: number) => {
   currentImageIndex.value = index;
-  restartAutoSlide();
+  isUserPaused.value = true;
 };
 
 const handlePrev = () => {
   previousImage();
-  restartAutoSlide();
+  isUserPaused.value = true;
 };
 
 const handleNext = () => {
   nextImage();
-  restartAutoSlide();
+  isUserPaused.value = true;
 };
 
 // 좌우 스와이프
@@ -269,6 +281,7 @@ const shouldAutoSlide = computed(
     isInView.value &&
     !isHovered.value &&
     !isFocused.value &&
+    !isUserPaused.value &&
     !prefersReducedMotion
 );
 

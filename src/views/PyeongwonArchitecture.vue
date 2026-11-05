@@ -1,5 +1,13 @@
 <template>
   <div class="min-h-screen bg-white">
+    <!-- 키보드·스크린리더 사용자를 위한 본문 바로가기 -->
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:font-semibold focus:text-gray-900 focus:shadow-lg"
+    >
+      본문 바로가기
+    </a>
+
     <!-- Header -->
     <Header
       :active-section="activeSection"
@@ -7,20 +15,22 @@
       @scroll-to="scrollToSection"
     />
 
-    <!-- Hero Section -->
-    <HeroSection @scroll-to="scrollToSection" />
+    <main id="main" tabindex="-1" class="outline-none">
+      <!-- Hero Section -->
+      <HeroSection @scroll-to="scrollToSection" />
 
-    <!-- About Section -->
-    <AboutSection :features="features" :stats="COMPANY_STATS" />
+      <!-- About Section -->
+      <AboutSection :features="features" :stats="COMPANY_STATS" />
 
-    <!-- Services Section -->
-    <ServicesSection :services="services" />
+      <!-- Services Section -->
+      <ServicesSection :services="services" />
 
-    <!-- Portfolio Section -->
-    <PortfolioSection :portfolio="portfolio" />
+      <!-- Portfolio Section -->
+      <PortfolioSection :portfolio="portfolio" />
 
-    <!-- Contact Section -->
-    <ContactUsSection :contacts="contacts" />
+      <!-- Contact Section -->
+      <ContactUsSection :contacts="contacts" />
+    </main>
 
     <!-- Footer -->
     <Footer />
@@ -102,7 +112,14 @@ const contacts = CONTACT_LIST.filter(
   icon: iconMap[contact.icon],
 }));
 
+// 메뉴로 이동하면 화면뿐 아니라 키보드 포커스도 해당 섹션으로 옮긴다
+// (그래야 다음 Tab이 이동한 섹션 안에서 이어진다)
 const scrollToSection = (sectionId: string) => {
-  document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+  const section = document.getElementById(sectionId);
+  if (!section) return;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  section.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+  if (!section.hasAttribute("tabindex")) section.setAttribute("tabindex", "-1");
+  section.focus({ preventScroll: true });
 };
 </script>
