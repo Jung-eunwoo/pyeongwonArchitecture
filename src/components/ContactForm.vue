@@ -38,7 +38,7 @@
             type="tel"
             inputmode="numeric"
             autocomplete="tel"
-            maxlength="13"
+            maxlength="14"
             placeholder="010-0000-0000"
             required
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"

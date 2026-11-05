@@ -2,10 +2,22 @@
  * 입력 중인 전화번호에 하이픈을 넣는다.
  * - 02 지역번호: 02-XXX-XXXX / 02-XXXX-XXXX
  * - 15XX/16XX/18XX 대표번호: 1588-XXXX
+ * - 050X 안심번호: 0505-XXX-XXXX / 0505-XXXX-XXXX
  * - 그 외(010, 031 등): 0XX-XXX-XXXX / 0XX-XXXX-XXXX
  */
 export function formatPhoneNumber(value: string): string {
-  const digits = value.replace(/\D/g, "").slice(0, 11);
+  const allDigits = value.replace(/\D/g, "");
+
+  if (/^050\d/.test(allDigits)) {
+    const digits = allDigits.slice(0, 12);
+    if (digits.length <= 4) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+    if (digits.length <= 11)
+      return `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
+    return `${digits.slice(0, 4)}-${digits.slice(4, 8)}-${digits.slice(8)}`;
+  }
+
+  const digits = allDigits.slice(0, 11);
 
   if (digits.startsWith("02")) {
     if (digits.length <= 2) return digits;
