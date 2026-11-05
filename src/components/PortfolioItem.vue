@@ -27,14 +27,25 @@
             :key="index"
             class="w-full flex-shrink-0 h-full"
           >
-            <!-- 카드가 화면 근처에 오면 모든 슬라이드 사진을 불러온다
+            <!-- 첫 장은 항상 렌더링(검색엔진·이미지 검색이 읽을 수 있게, 브라우저 lazy 로딩).
+                 나머지 슬라이드는 카드가 화면 근처에 오면 불러온다
                  (브라우저 lazy 로딩은 가로로 숨겨진 슬라이드를 늦게 불러와 넘길 때 빈 화면이 보임) -->
             <img
-              v-if="hasEnteredView"
+              v-if="index === 0 || hasEnteredView"
               :src="image"
-              :alt="`${title} 이미지 ${index + 1}`"
+              :srcset="buildSrcset(image)"
+              :sizes="PORTFOLIO_CARD_SIZES"
+              :width="getImageInfo(image)?.width"
+              :height="getImageInfo(image)?.height"
+              :alt="`${type} · ${title} 시공 사진 ${index + 1}/${images.length}`"
+              :loading="index === 0 ? 'lazy' : undefined"
               decoding="async"
-              class="w-full h-full object-cover"
+              class="w-full h-full"
+              :class="
+                isPortrait(image)
+                  ? 'object-contain bg-gray-100'
+                  : 'object-cover'
+              "
               @error="handleImageError"
             />
           </div>
@@ -137,6 +148,12 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import {
+  PORTFOLIO_CARD_SIZES,
+  buildSrcset,
+  getImageInfo,
+  isPortrait,
+} from "@/utils/responsive-image";
 
 interface Props {
   title: string;

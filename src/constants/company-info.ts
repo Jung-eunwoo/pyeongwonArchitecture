@@ -44,9 +44,8 @@ export const COMPANY_INFO = {
 export const CONTACT_LINKS = {
   tel: `tel:${COMPANY_INFO.phone.replace(/-/g, "")}`,
   mailto: `mailto:${COMPANY_INFO.email}`,
-  map: `https://map.naver.com/p/search/${encodeURIComponent(
-    COMPANY_INFO.address.roadAddress
-  )}`,
+  // 네이버 지도 업체 페이지 (주소 검색 대신 정확한 업체 위치)
+  map: "https://naver.me/Gy3TOM0N",
 } as const;
 
 // 회사 실적
