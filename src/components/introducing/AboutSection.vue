@@ -50,8 +50,12 @@
           >
             <div class="w-full h-96 rounded-lg overflow-hidden shadow-lg">
               <img
-                src="/pwarcitecture.png"
-                alt="평원건축 사무실"
+                src="/images/office.webp"
+                alt="평원건축 사무실 외관"
+                width="660"
+                height="507"
+                loading="lazy"
+                decoding="async"
                 class="w-full h-full object-cover object-center"
               />
             </div>

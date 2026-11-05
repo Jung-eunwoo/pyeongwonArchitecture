@@ -1,6 +1,11 @@
 <template>
   <div
+    ref="cardRef"
     class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow group"
+    @mouseenter="isPaused = true"
+    @mouseleave="isPaused = false"
+    @focusin="isPaused = true"
+    @focusout="isPaused = false"
   >
     <div class="relative">
       <!-- 이미지 슬라이드 영역 -->
@@ -17,9 +22,13 @@
             :key="index"
             class="w-full flex-shrink-0 h-full"
           >
+            <!-- 카드가 화면 근처에 오면 모든 슬라이드 사진을 불러온다
+                 (브라우저 lazy 로딩은 가로로 숨겨진 슬라이드를 늦게 불러와 넘길 때 빈 화면이 보임) -->
             <img
+              v-if="hasEnteredView"
               :src="image"
               :alt="`${title} 이미지 ${index + 1}`"
+              decoding="async"
               class="w-full h-full object-cover"
               @error="handleImageError"
             />
@@ -111,7 +120,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 
 interface Props {
   title: string;
@@ -151,16 +160,31 @@ const handleImageError = (event: Event) => {
   img.style.display = "none";
 };
 
-// 자동 슬라이드 시작
+// ── 자동 슬라이드 ──────────────────────────────
+// 화면에 보이고, 마우스/포커스가 없고, 동작 줄이기 설정이 아닐 때만 넘긴다.
+const AUTO_SLIDE_MS = 4000;
+
+const cardRef = ref<HTMLElement>();
+const isInView = ref(false);
+const hasEnteredView = ref(false);
+const isPaused = ref(false);
+const prefersReducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)"
+).matches;
+
+const shouldAutoSlide = computed(
+  () =>
+    props.images.length > 1 &&
+    isInView.value &&
+    !isPaused.value &&
+    !prefersReducedMotion
+);
+
 const startAutoSlide = () => {
-  if (props.images && props.images.length > 1) {
-    autoSlideInterval = setInterval(() => {
-      nextImage();
-    }, 4000); // 4초마다 자동 슬라이드
-  }
+  if (!shouldAutoSlide.value || autoSlideInterval) return;
+  autoSlideInterval = setInterval(nextImage, AUTO_SLIDE_MS);
 };
 
-// 자동 슬라이드 정지
 const stopAutoSlide = () => {
   if (autoSlideInterval) {
     clearInterval(autoSlideInterval);
@@ -168,11 +192,25 @@ const stopAutoSlide = () => {
   }
 };
 
+watch(shouldAutoSlide, (enabled) => (enabled ? startAutoSlide() : stopAutoSlide()));
+
+let observer: IntersectionObserver | null = null;
+
 onMounted(() => {
-  startAutoSlide();
+  if (!cardRef.value) return;
+  observer = new IntersectionObserver(
+    ([entry]) => {
+      isInView.value = !!entry?.isIntersecting;
+      if (entry?.isIntersecting) hasEnteredView.value = true;
+    },
+    // 화면에 들어오기 300px 전부터 사진을 불러오기 시작
+    { rootMargin: "300px 0px" }
+  );
+  observer.observe(cardRef.value);
 });
 
 onUnmounted(() => {
+  observer?.disconnect();
   stopAutoSlide();
 });
 </script>

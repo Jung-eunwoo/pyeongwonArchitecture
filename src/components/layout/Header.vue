@@ -5,7 +5,13 @@
     <div class="container mx-auto px-4 py-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-3">
-          <img src="/logo.png" alt="평원건축 로고" class="h-10 w-auto" />
+          <img
+            src="/logo.png"
+            alt="평원건축 로고"
+            width="40"
+            height="40"
+            class="h-10 w-auto"
+          />
           <span class="text-2xl font-bold text-gray-900">평원건축</span>
         </div>
         <nav class="hidden md:flex space-x-8">
