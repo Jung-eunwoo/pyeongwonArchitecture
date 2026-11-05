@@ -1,265 +1,153 @@
-import { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
+import type { Handler, HandlerEvent } from "@netlify/functions";
 import emailjs from "@emailjs/nodejs";
 import { FEATURES } from "../../src/constants/features";
+import { validateInquiry, type InquiryData } from "../../src/shared/inquiry";
 
-interface ContactFormData {
-  customer_name: string;
-  customer_phone: string;
-  customer_email: string;
-  construction_date: string;
-  construction_type: string;
-  area: string;
-  budget: string;
-  postal_code: string;
-  road_address: string;
-  detail_address: string;
-  full_address: string;
-  message: string;
-  inquiry_date: string;
+// 같은 사이트에서만 호출하므로 CORS 헤더는 두지 않는다 (브라우저가 교차 출처 호출을 막음)
+const JSON_HEADERS = { "Content-Type": "application/json" };
+
+const respond = (statusCode: number, body: Record<string, unknown>) => ({
+  statusCode,
+  headers: JSON_HEADERS,
+  body: JSON.stringify(body),
+});
+
+const createDebugId = () =>
+  Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+/** Origin 헤더가 있으면 Host와 같은지 확인 (다른 사이트에서의 호출 차단) */
+function isSameOrigin(event: HandlerEvent): boolean {
+  const origin = event.headers.origin;
+  const host = event.headers.host;
+  if (!origin || !host) return true; // 서버 간 호출 등 Origin이 없는 경우는 아래 검증에 맡김
+  try {
+    return new URL(origin).host === host;
+  } catch {
+    return false;
+  }
 }
 
-const handler: Handler = async (
-  event: HandlerEvent,
-  context: HandlerContext
-) => {
-  // CORS 헤더 설정
-  const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Content-Type": "application/json",
+function getEmailConfig() {
+  // VITE_ 접두사는 기존 Netlify 환경변수 호환용 fallback
+  const env = process.env;
+  const config = {
+    serviceId: env.EMAILJS_SERVICE_ID || env.VITE_EMAILJS_SERVICE_ID,
+    templateId: env.EMAILJS_TEMPLATE_ID || env.VITE_EMAILJS_TEMPLATE_ID,
+    customerTemplateId:
+      env.EMAILJS_CUSTOMER_TEMPLATE_ID || env.VITE_EMAILJS_CUSTOMER_TEMPLATE_ID,
+    publicKey: env.EMAILJS_PUBLIC_KEY || env.VITE_EMAILJS_PUBLIC_KEY,
+    privateKey: env.EMAILJS_PRIVATE_KEY,
   };
+  const missing = Object.entries(config)
+    .filter(([, value]) => !value)
+    .map(([key]) => key);
+  return { config: config as Record<keyof typeof config, string>, missing };
+}
 
-  // OPTIONS 요청 처리 (CORS preflight)
-  if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 200,
-      headers,
-      body: "",
-    };
-  }
+function toTemplateParams(data: InquiryData) {
+  const fullAddress = [
+    data.postalCode && `(${data.postalCode})`,
+    data.roadAddress,
+    data.detailAddress,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
+  return {
+    customer_name: data.name,
+    customer_phone: data.phone,
+    customer_email: data.email,
+    construction_type: data.constructionType,
+    construction_date: data.constructionDate || "미정",
+    area: data.area || "미정",
+    budget: data.budget || "미정",
+    postal_code: data.postalCode,
+    road_address: data.roadAddress,
+    detail_address: data.detailAddress,
+    full_address: fullAddress || "미입력",
+    message: data.message || "특별한 요청사항 없음",
+    // 접수 시각은 서버 기준(KST)으로 기록
+    inquiry_date: new Date().toLocaleString("ko-KR", {
+      timeZone: "Asia/Seoul",
+      dateStyle: "long",
+      timeStyle: "short",
+    }),
+  };
+}
+
+const handler: Handler = async (event) => {
   // 폼 문의 비활성화 중에는 직접 호출도 받지 않음 (스팸 메일 발송 방지)
   if (!FEATURES.inquiryForm) {
-    return {
-      statusCode: 503,
-      headers,
-      body: JSON.stringify({ error: "Inquiry form is disabled" }),
-    };
+    return respond(503, { error: "현재 온라인 문의를 받지 않습니다." });
   }
 
-  // POST 요청만 허용
   if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: "Method not allowed" }),
-    };
+    return respond(405, { error: "Method not allowed" });
   }
 
-  try {
-    // 환경 변수에서 EmailJS 설정 가져오기 (VITE_ 접두사 fallback)
-    const serviceId = (process.env.EMAILJS_SERVICE_ID ||
-      process.env.VITE_EMAILJS_SERVICE_ID) as string | undefined;
-    const templateId = (process.env.EMAILJS_TEMPLATE_ID ||
-      process.env.VITE_EMAILJS_TEMPLATE_ID) as string | undefined;
-    const customerTemplateId = (process.env.EMAILJS_CUSTOMER_TEMPLATE_ID ||
-      process.env.VITE_EMAILJS_CUSTOMER_TEMPLATE_ID) as string | undefined;
-    const privateKey = process.env.EMAILJS_PRIVATE_KEY as string | undefined;
-    const publicKey = (process.env.EMAILJS_PUBLIC_KEY ||
-      process.env.VITE_EMAILJS_PUBLIC_KEY) as string | undefined;
-
-    const missing: string[] = [];
-    if (!serviceId) missing.push("EMAILJS_SERVICE_ID");
-    if (!templateId) missing.push("EMAILJS_TEMPLATE_ID");
-    if (!customerTemplateId) missing.push("EMAILJS_CUSTOMER_TEMPLATE_ID");
-    if (!publicKey) missing.push("EMAILJS_PUBLIC_KEY");
-    if (!privateKey) missing.push("EMAILJS_PRIVATE_KEY");
-
-    if (missing.length) {
-      console.error("Missing EmailJS configuration keys:", missing);
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({
-          error: "Server configuration error",
-          details: "EmailJS configuration is incomplete",
-          missing,
-          hint: "Netlify 환경변수에 위 키들을 정확히 추가하세요. PRIVATE_KEY 는 EmailJS Dashboard Account에서 확인.",
-        }),
-      };
-    }
-
-    // 요청 본문 파싱
-    const formData: ContactFormData = JSON.parse(event.body || "{}");
-
-    // 필수 필드 검증
-    if (
-      !formData.customer_name ||
-      !formData.customer_phone ||
-      !formData.customer_email ||
-      !formData.construction_type
-    ) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({
-          error: "Missing required fields",
-          required: [
-            "customer_name",
-            "customer_phone",
-            "customer_email",
-            "construction_type",
-          ],
-        }),
-      };
-    }
-
-    // 템플릿 파라미터 준비
-    const templateParams = {
-      customer_name: formData.customer_name,
-      customer_phone: formData.customer_phone,
-      customer_email: formData.customer_email,
-      construction_date: formData.construction_date || "미정",
-      construction_type: formData.construction_type,
-      area: formData.area || "미정",
-      budget: formData.budget || "미정",
-      postal_code: formData.postal_code || "",
-      road_address: formData.road_address || "",
-      detail_address: formData.detail_address || "",
-      full_address: formData.full_address || "미입력",
-      message: formData.message || "특별한 요청사항 없음",
-      inquiry_date: formData.inquiry_date,
-    };
-
-    // 추가: 환경 설정 요약 로그 (민감정보 직접 출력 금지)
-    console.log("[contact] EmailJS config summary", {
-      serviceId,
-      templateId,
-      customerTemplateId,
-      publicKeyLen: publicKey?.length,
-      privateKeyLen: privateKey?.length,
-      privateKeyHead: privateKey ? privateKey.slice(0, 4) + "***" : undefined,
-    });
-
-    // 이메일 전송 실행 (각 단계 분리)
-    try {
-      const startTs = Date.now();
-      console.log("[contact] Sending company email...");
-      const companyRes = await emailjs.send(
-        serviceId!,
-        templateId!,
-        templateParams,
-        {
-          publicKey: publicKey!,
-          privateKey: privateKey!,
-        }
-      );
-      console.log(
-        "[contact] Company email result",
-        safeResult(companyRes),
-        `elapsed=${Date.now() - startTs}ms`
-      );
-
-      console.log("[contact] Sending customer confirmation email...");
-      const customerStart = Date.now();
-      const customerRes = await emailjs.send(
-        serviceId!,
-        customerTemplateId!,
-        templateParams,
-        { publicKey: publicKey!, privateKey: privateKey! }
-      );
-      console.log(
-        "[contact] Customer email result",
-        safeResult(customerRes),
-        `elapsed=${Date.now() - customerStart}ms`
-      );
-      console.log(
-        "[contact] Emails sent successfully for",
-        formData.customer_name
-      );
-    } catch (emailError: any) {
-      const diag = enrichEmailError(emailError);
-      console.error("[contact] EmailJS error detail", diag);
-      return {
-        statusCode: 502,
-        headers,
-        body: JSON.stringify({
-          error: "Email delivery failed",
-          reason: diag.message || "Unknown EmailJS error",
-          which: diag.phase,
-          status: diag.status,
-          text: diag.text,
-          rawType: diag.rawType,
-          suggestion:
-            "서비스/템플릿/키 값 및 Private Key, 템플릿 연결 여부, customer 템플릿 ID 확인",
-          debugId: diag.debugId,
-        }),
-      };
-    }
-
-    // 성공 응답
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        success: true,
-        message: "견적 문의가 성공적으로 전송되었습니다.",
-        timestamp: new Date().toISOString(),
-      }),
-    };
-  } catch (error) {
-    console.error("Contact form submission error:", error);
-
-    // 에러 응답
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({
-        error: "Failed to send contact form",
-        details: error instanceof Error ? error.message : "Unknown error",
-        timestamp: new Date().toISOString(),
-      }),
-    };
+  if (!isSameOrigin(event)) {
+    return respond(403, { error: "Forbidden" });
   }
-};
 
-// 안전하게 EmailJS 응답 로깅 형태 축약
-function safeResult(res: any) {
-  if (!res) return res;
+  let payload: unknown;
   try {
-    const { status, text } = res as any;
-    return { status, text };
+    payload = JSON.parse(event.body ?? "");
   } catch {
-    return { type: typeof res };
+    return respond(400, { error: "잘못된 요청입니다." });
   }
-}
 
-// 에러 세부 정보 추출
-function enrichEmailError(err: any) {
-  const debugId =
-    Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-  const base: any = {
-    debugId,
-    phase: inferPhaseFromStack(err?.stack),
-    status: err?.status || err?.response?.status,
-    text: err?.text || err?.response?.text,
-    message: err?.message,
-    rawType: Object.prototype.toString.call(err),
-  };
-  // message가 없고 객체면 직렬화 시도
-  if (!base.message) {
-    try {
-      base.message = JSON.stringify(err).slice(0, 300);
-    } catch {}
+  const result = validateInquiry(payload);
+  if (!result.ok) {
+    // 봇에게는 성공처럼 보이게 응답하고 메일은 보내지 않는다
+    if (result.bot) {
+      console.warn("[contact] bot submission dropped");
+      return respond(200, { success: true });
+    }
+    return respond(400, { error: result.message });
   }
-  return base;
-}
 
-function inferPhaseFromStack(stack?: string) {
-  if (!stack) return undefined;
-  if (stack.includes("customer")) return "customerTemplate";
-  return "companyTemplate"; // 대략적 추정
-}
+  const { config, missing } = getEmailConfig();
+  if (missing.length) {
+    const debugId = createDebugId();
+    console.error("[contact] missing EmailJS config", { debugId, missing });
+    return respond(500, {
+      error: "일시적인 오류로 접수하지 못했습니다.",
+      debugId,
+    });
+  }
+
+  const templateParams = toTemplateParams(result.data);
+  const keys = { publicKey: config.publicKey, privateKey: config.privateKey };
+
+  let phase: "company" | "customer" = "company";
+  try {
+    await emailjs.send(config.serviceId, config.templateId, templateParams, keys);
+    phase = "customer";
+    await emailjs.send(
+      config.serviceId,
+      config.customerTemplateId,
+      templateParams,
+      keys
+    );
+  } catch (error: unknown) {
+    const debugId = createDebugId();
+    const err = error as { status?: number; text?: string; message?: string };
+    // 고객 정보(이름·연락처 등)와 키 값은 로그에 남기지 않는다
+    console.error("[contact] EmailJS send failed", {
+      debugId,
+      phase,
+      status: err?.status,
+      text: err?.text ?? err?.message,
+    });
+    // 회사 메일은 이미 발송됨 → 접수는 완료된 것이므로 실패로 응답하면 재전송으로 중복 접수가 생긴다
+    if (phase === "customer") return respond(200, { success: true });
+    return respond(502, {
+      error: "일시적인 오류로 접수하지 못했습니다.",
+      debugId,
+    });
+  }
+
+  return respond(200, { success: true });
+};
 
 export { handler };

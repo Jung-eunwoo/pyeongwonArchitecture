@@ -6,7 +6,8 @@
     "cypress.config.*",
     "nightwatch.conf.*",
     "playwright.config.*",
-    "eslint.config.*"
+    "eslint.config.*",
+    "netlify/functions/**/*.ts"
   ],
   "compilerOptions": {
     "noEmit": true,
