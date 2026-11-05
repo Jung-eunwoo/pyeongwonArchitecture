@@ -26,12 +26,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, type Component } from "vue";
 import ServiceCard from "../ServiceCard.vue";
 
 interface Props {
   services: Array<{
-    icon: any;
+    icon: Component;
     title: string;
     description: string;
     items: string[];

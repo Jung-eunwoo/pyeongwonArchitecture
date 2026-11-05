@@ -231,3 +231,20 @@ export const INITIAL_FORM_DATA = {
   budget: "",
   message: "",
 } as const;
+
+// 개인정보 수집·이용 고지 (개인정보 보호법 제15조, 제22조)
+// ※ 보유기간·위탁 내용은 실제 운영 방식에 맞게 확인 후 수정하세요.
+export const PRIVACY_POLICY = {
+  effectiveDate: "2026-11-05",
+  items: {
+    required: ["이름", "연락처", "이메일", "공사 구분"],
+    optional: ["공사 예정일", "평형", "예상 금액", "공사 예정지 주소", "문의 내용"],
+  },
+  purpose: "견적 문의 접수, 상담 및 견적 안내를 위한 연락",
+  retention: "문의 처리 완료 후 1년간 보관 후 파기",
+  // 처리 위탁 (메일 발송 / 웹사이트 호스팅)
+  processors: [
+    { name: "EmailJS", task: "견적 문의 메일 발송" },
+    { name: "Netlify", task: "웹사이트 호스팅 및 문의 접수 서버 운영" },
+  ],
+} as const;
